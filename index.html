@@ -1,29 +1,114 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>v13 TODO ADENTRO</title><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#f2f0eb;font-family:Arial,sans-serif;padding-bottom:90px}.header{background:#1a4d2e;color:#fff;padding:14px;display:flex;justify-content:space-between}.badge{background:#fff;color:#1a4d2e;padding:5px 10px;border-radius:6px;font-weight:800;font-size:11px}.page{padding:12px;max-width:600px;margin:auto}.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}.input{width:100%;border:1px solid #ddd;border-radius:10px;padding:12px;background:#f9fafb;font-size:14px}label{font-size:12px;font-weight:700}.btn-green{background:#1a4d2e;color:#fff;font-weight:700;padding:13px;border:none;border-radius:10px;width:100%}.bottomnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;display:flex}.bottomnav button{flex:1;padding:15px;border:none;background:#fff;font-weight:700}.tab-active{background:#1a4d2e!important;color:#fff!important}.hidden{display:none!important}.sev{flex:1;border:1px solid #ddd;border-radius:999px;padding:9px;background:#fff}.sev-on{background:#1a4d2e!important;color:#fff!important}</style></head>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inspecciones Ambientales v14 FINAL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#f2f0eb;font-family:Inter,Arial,sans-serif;padding-bottom:90px}
+.header{background:#1a4d2e;color:#fff;padding:16px 14px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px}.header p{font-size:12px;opacity:.8}
+.badge{background:#fff;color:#1a4d2e;padding:6px 10px;border-radius:6px;font-weight:800;font-size:11px}
+.page{padding:12px;max-width:620px;margin:auto}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.input,select,textarea{width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:12px;background:#f9fafb;font-size:14px}
+label{font-size:12px;font-weight:800;color:#374151}
+.btn-green{background:#1a4d2e;color:#fff;font-weight:800;padding:13px;border:none;border-radius:10px;width:100%;cursor:pointer}
+.btn-light{background:#eef2ee;border:1px solid #ddd;padding:11px;border-radius:10px;width:100%;font-weight:700}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;display:flex;z-index:10}
+.bottomnav button{flex:1;padding:15px;border:none;background:#fff;font-weight:700;cursor:pointer}
+.tab-active{background:#1a4d2e!important;color:#fff!important}
+.hidden{display:none!important}
+.sev-row{display:flex;gap:8px}.sev{flex:1;border:1.5px solid #ddd;border-radius:999px;padding:10px;background:#fff;font-weight:700;cursor:pointer}.sev-on{background:#1a4d2e!important;color:#fff!important}
+.chip{display:inline-block;background:#e8f5e9;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}
+.kpi{display:flex;gap:8px}.kpi div{flex:1;background:#f9fafb;border:1px solid #eee;border-radius:12px;padding:10px;text-align:center}
+</style>
+</head>
 <body>
-<header class="header"><div><h1>🌿 Inspecciones v13</h1><p>Todo en un archivo - SI FUNCIONA</p></div><span class="badge">ADMIN</span></header>
-<div id="p1" class="page"><div class="card"><h2>Información General</h2><label>Área / Planta</label><select id="planta" class="input"></select><label>Subárea</label><select id="subarea" class="input"></select><label>Responsable</label><select id="responsable" class="input"></select><label>Correo</label><input id="correo" class="input"><label>Fecha</label><input id="fecha" type="date" class="input"><button onclick="showStep(2)" class="btn-green">Continuar →</button></div></div>
-<div id="p2" class="page hidden"><div class="card"><h2>Hallazgo</h2><textarea id="desc" class="input" placeholder="Describe hallazgo"></textarea><div style="display:flex;gap:8px"><button onclick="setSev('Leve')" id="sLeve" class="sev">Leve</button><button onclick="setSev('Medio')" id="sMedio" class="sev">Medio</button><button onclick="setSev('Critico')" id="sCrit" class="sev">Crítico</button></div><button onclick="guardarTodo()" class="btn-green">💾 GUARDAR INSPECCIÓN</button><div id="listaTemp"></div></div></div>
-<div id="p3" class="page hidden"><div class="card"><h2>Dashboard</h2><div id="listaAll"></div></div></div>
-<nav class="bottomnav"><button id="b1" onclick="showStep(1)" class="tab-active">Inicio</button><button id="b2" onclick="showStep(2)">Inspecciones</button><button id="b3" onclick="showStep(3)">Admin</button></nav>
+<header class="header"><div><h1>🌿 Inspecciones Ambientales</h1><p>v14 FINAL • Todo en un archivo</p></div><span class="badge">ADMIN</span></header>
+<div id="p1" class="page">
+<div class="card"><h2>Información General</h2>
+<label>Área / Planta *</label><select id="planta" class="input"></select>
+<label>Subárea *</label><select id="subarea" class="input"></select>
+<label>Responsable *</label><select id="responsable" class="input"></select>
+<label>Correo responsable</label><input id="correo" class="input" readonly>
+<label>Fecha</label><input id="fecha" type="date" class="input">
+<label>GPS</label><div style="display:flex;gap:8px"><input id="gpsText" class="input" placeholder="Sin ubicación" readonly><button onclick="getGPS()" style="padding:10px;border-radius:10px;border:1px solid #ddd;background:#fff">📍</button></div>
+<button onclick="showStep(2)" class="btn-green">Continuar → Hallazgos</button>
+</div>
+</div>
+<div id="p2" class="page hidden">
+<div class="card"><h2>Nuevo Hallazgo</h2>
+<label>Descripción *</label><textarea id="desc" class="input" placeholder="Ej: Derrame de aceite en zona de colada"></textarea>
+<label>Severidad</label><div class="sev-row"><button id="sLeve" onclick="setSev('Leve')" class="sev sev-on">Leve</button><button id="sMedio" onclick="setSev('Medio')" class="sev">Medio</button><button id="sCrit" onclick="setSev('Crítico')" class="sev">Crítico</button></div>
+<label>Ubicación específica</label><input id="ubic" class="input" placeholder="Ej: Pasillo 2">
+<label>Tipo</label><select id="tipo" class="input"><option>Ambiental</option><option>Seguridad</option><option>Orden y aseo</option></select>
+<label>Foto</label><input id="foto" type="file" accept="image/*" class="input"><img id="preview" class="hidden" style="width:100%;border-radius:10px">
+<button onclick="addHallazgoTemp()" class="btn-light">+ Agregar hallazgo a la lista</button>
+<div id="listaTemp"></div>
+<button onclick="guardarTodo()" class="btn-green">💾 GUARDAR INSPECCIÓN COMPLETA</button>
+<button onclick="showStep(1)" class="btn-light">← Volver</button>
+</div>
+</div>
+<div id="p3" class="page hidden">
+<div class="card"><h2>Dashboard</h2>
+<div class="kpi"><div><b id="kTotal">0</b><br><small>Total</small></div><div><b id="kCrit">0</b><br><small>Críticos</small></div><div><b id="kAbiertas">0</b><br><small>Abiertas</small></div></div>
+<label>Filtrar División</label><select id="fDiv" class="input" onchange="renderDash()"></select>
+<label>Filtrar Área</label><select id="fArea" class="input" onchange="renderDash()"></select>
+<div id="listaAll"></div>
+</div>
+<div class="card"><h2>Administración</h2>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><button onclick="gestionDiv()" class="btn-light" style="flex:1">Divisiones</button><button onclick="gestionArea()" class="btn-light" style="flex:1">Áreas</button><button onclick="gestionResp()" class="btn-light" style="flex:1">Responsables</button></div>
+<div id="adminEdit" style="display:flex;flex-direction:column;gap:8px"></div>
+<button onclick="exportAll()" class="btn-green" style="margin-top:8px">📄 Exportar todo a PDF</button>
+<button onclick="if(confirm('Borrar todo?')){localStorage.clear();location.reload()}" class="btn-light">🗑️ Borrar datos locales</button>
+</div>
+</div>
+<nav class="bottomnav"><button id="b1" onclick="showStep(1)" class="tab-active">🏠 Inicio</button><button id="b2" onclick="showStep(2)">📝 Inspecciones</button><button id="b3" onclick="showStep(3)">📊 Admin</button></nav>
 <script>
-let DB={divisiones:["Acería","Laminación"],areas:{"Acería":["Horno","Colada","Ajuste"],"Laminación":["Tren 1","Tren 2"]},responsables:{"Horno":["Juan Perez"],"Colada":["Ana Gomez"]},correos:{"Juan Perez":"juan@empresa.com","Ana Gomez":"ana@empresa.com"},inspecciones:JSON.parse(localStorage.getItem('inspDB')||'[]')};
-let sevSel='Leve';
+let DB = JSON.parse(localStorage.getItem('DBv14')||'null') || {
+  divisiones: ["Acería","Laminación","Servicios Generales"],
+  areas: {"Acería":["Horno Eléctrico","Colada Continua","Ajuste","Patio Chatarra"],"Laminación":["Tren 1","Tren 2","Horno Recalentamiento"],"Servicios Generales":["PTAR","Almacén","Talleres"]},
+  responsables: {"Horno Eléctrico":["Juan Perez","Carlos Ruiz"],"Colada Continua":["Ana Gomez"],"Ajuste":["Luis Torres"],"Tren 1":["Maria Lopez"]},
+  correos: {"Juan Perez":"juan@empresa.com","Carlos Ruiz":"carlos@empresa.com","Ana Gomez":"ana@empresa.com","Luis Torres":"luis@empresa.com","Maria Lopez":"maria@empresa.com"},
+  inspecciones: []
+};
+let tempHallazgos=[]; let sevSel='Leve'; let gps='';
+function save(){ localStorage.setItem('DBv14', JSON.stringify(DB)); }
 function $(id){return document.getElementById(id)}
 function init(){
   $('fecha').value=new Date().toISOString().slice(0,10);
   $('planta').innerHTML=DB.divisiones.map(d=>`<option>${d}</option>`).join('');
+  $('fDiv').innerHTML=`<option value="">Todas</option>`+DB.divisiones.map(d=>`<option>${d}</option>`).join('');
   $('planta').onchange=cargarSub; $('subarea').onchange=asignarResp; $('responsable').onchange=asignarCorreo;
   cargarSub(); renderDash();
 }
 function cargarSub(){let subs=DB.areas[$('planta').value]||[];$('subarea').innerHTML=subs.map(s=>`<option>${s}</option>`).join('');asignarResp();}
 function asignarResp(){let r=DB.responsables[$('subarea').value]||["Sin asignar"];$('responsable').innerHTML=r.map(x=>`<option>${x}</option>`).join('');asignarCorreo();}
-function asignarCorreo(){$('correo').value=DB.correos[$('responsable').value]||"";}
+function asignarCorreo(){$('correo').value=DB.correos[$('responsable').value]||"sin correo";}
 function showStep(n){['p1','p2','p3'].forEach((id,i)=>$(id).classList.toggle('hidden',i!==(n-1)));['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('tab-active',i===(n-1)));if(n===3)renderDash();}
-function setSev(s){sevSel=s;['sLeve','sMedio','sCrit'].forEach(id=>$(id).classList.remove('sev-on'));if(s==='Leve')$('sLeve').classList.add('sev-on');if(s==='Medio')$('sMedio').classList.add('sev-on');if(s==='Critico')$('sCrit').classList.add('sev-on');}
-function guardarTodo(){let insp={div:$('planta').value,area:$('subarea').value,resp:$('responsable').value,fecha:$('fecha').value,desc:$('desc').value,sev:sevSel};DB.inspecciones.push(insp);localStorage.setItem('inspDB',JSON.stringify(DB.inspecciones));alert('Guardado: '+insp.div+' - '+insp.area);renderDash();showStep(3);}
-function renderDash(){$('listaAll').innerHTML=DB.inspecciones.map(i=>`<div style="border:1px solid #ddd;padding:10px;border-radius:8px;margin-top:6px"><b>${i.div} - ${i.area}</b><br>${i.resp} - ${i.fecha}<br>${i.desc} [${i.sev}]</div>`).join('')||'Sin inspecciones aún';}
+function getGPS(){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{gps=p.coords.latitude.toFixed(5)+','+p.coords.longitude.toFixed(5);$('gpsText').value=gps;});}else alert('GPS no disponible');}
+function setSev(s){sevSel=s;['sLeve','sMedio','sCrit'].forEach(id=>$(id).classList.remove('sev-on'));if(s==='Leve')$('sLeve').classList.add('sev-on');if(s==='Medio')$('sMedio').classList.add('sev-on');if(s==='Crítico')$('sCrit').classList.add('sev-on');}
+document.getElementById('foto').addEventListener('change',e=>{let r=new FileReader();r.onload=ev=>{$('preview').src=ev.target.result;$('preview').classList.remove('hidden');};if(e.target.files[0])r.readAsDataURL(e.target.files[0]);});
+function addHallazgoTemp(){let d=$('desc').value;if(!d)return alert('Escribe descripción');tempHallazgos.push({desc:d,sev:sevSel,ubic:$('ubic').value,tipo:$('tipo').value,foto:$('preview').src||''});$('listaTemp').innerHTML=tempHallazgos.map(h=>`<div style="border:1px solid #ddd;padding:10px;border-radius:10px;margin-top:6px"><b>${h.desc}</b><br><span class="chip">${h.sev} • ${h.tipo}</span> ${h.ubic}</div>`).join('');$('desc').value='';$('preview').classList.add('hidden');}
+function guardarTodo(){if(tempHallazgos.length===0 && !$('desc').value) return alert('Agrega al menos un hallazgo'); if($('desc').value) addHallazgoTemp(); let insp={div:$('planta').value,area:$('subarea').value,resp:$('responsable').value,correo:$('correo').value,fecha:$('fecha').value,gps,hallazgos:tempHallazgos,estado:'Abierto'};DB.inspecciones.push(insp);save();tempHallazgos=[];$('listaTemp').innerHTML='';alert('✅ Guardado: '+insp.div+' - '+insp.area+' ('+insp.hallazgos.length+' hallazgos)');renderDash();showStep(3);}
+function renderDash(){
+  let fD=$('fDiv').value,fA=$('fArea').value;
+  if(fD){let ars=DB.areas[fD]||[];$('fArea').innerHTML=`<option value="">Todas</option>`+ars.map(a=>`<option>${a}</option>`).join('');}
+  let list=DB.inspecciones.filter(i=>(!fD||i.div===fD)&&(!fA||i.area===fA));
+  $('kTotal').textContent=list.length;
+  $('kCrit').textContent=list.reduce((a,i)=>a+i.hallazgos.filter(h=>h.sev==='Crítico').length,0);
+  $('kAbiertas').textContent=list.length;
+  $('listaAll').innerHTML=list.map((i,idx)=>`<div style="border:1px solid #eee;padding:12px;border-radius:12px;margin-top:8px;background:#f9fafb"><b>${i.div} - ${i.area}</b><br><small>${i.resp} • ${i.fecha} • ${i.gps||'sin GPS'}</small><br>${i.hallazgos.map(h=>`• ${h.desc} [${h.sev}]`).join('<br>')}<br><button onclick="exportPDF(${DB.inspecciones.indexOf(i)})" style="margin-top:8px;padding:7px 12px;background:#1a4d2e;color:#fff;border:none;border-radius:8px">PDF</button></div>`).join('')||'<p style="color:#888;margin-top:8px">Sin inspecciones aún. Crea la primera en Inicio.</p>';
+}
+function exportPDF(idx){try{let i=DB.inspecciones[idx];const {jsPDF}=window.jspdf;let doc=new jsPDF();doc.setFontSize(14);doc.text(`Inspeccion ${i.div} - ${i.area}`,10,15);doc.setFontSize(11);doc.text(`Resp: ${i.resp} | ${i.correo} | Fecha: ${i.fecha} | GPS: ${i.gps||''}`,10,25);i.hallazgos.forEach((h,n)=>{doc.text(`${n+1}. [${h.sev}] ${h.desc} - ${h.ubic} (${h.tipo})`,10,35+n*10);});doc.save(`inspeccion_${i.area}.pdf`);}catch(e){alert('Error PDF: '+e.message)}}
+function exportAll(){if(DB.inspecciones.length===0)return alert('No hay datos');exportPDF(0);}
+function gestionDiv(){$('adminEdit').innerHTML=`<input id="newDiv" class="input" placeholder="Nueva división Ej: Logística"><button onclick="addDiv()" class="btn-green">+ Agregar división</button>`+DB.divisiones.map(d=>`<p>• ${d}</p>`).join('');}
+function addDiv(){let v=$('newDiv').value.trim();if(v){DB.divisiones.push(v);DB.areas[v]=[];save();init();gestionDiv();}}
+function gestionArea(){let d=$('planta').value;$('adminEdit').innerHTML=`<p>División actual: <b>${d}</b></p><input id="newArea" class="input" placeholder="Nueva subárea Ej: Báscula"><button onclick="addArea()" class="btn-green">+ Agregar subárea a ${d}</button>`+(DB.areas[d]||[]).map(a=>`<p>• ${a}</p>`).join('');}
+function addArea(){let v=$('newArea').value.trim();let d=$('planta').value;if(v){DB.areas[d].push(v);save();cargarSub();gestionArea();}}
+function gestionResp(){$('adminEdit').innerHTML=`<input id="nrN" class="input" placeholder="Nombre Ej: Pedro Diaz"><input id="nrA" class="input" placeholder="Subárea Ej: Horno Eléctrico"><input id="nrM" class="input" placeholder="Correo"><button onclick="addResp()" class="btn-green">+ Agregar responsable</button>`;}
+function addResp(){let n=$('nrN').value.trim(),a=$('nrA').value.trim(),m=$('nrM').value.trim();if(!n||!a)return alert('Falta nombre o área');if(!DB.responsables[a])DB.responsables[a]=[];DB.responsables[a].push(n);DB.correos[n]=m;save();alert('Agregado '+n+' a '+a);cargarSub();}
 init();
 </script>
 </body></html>
