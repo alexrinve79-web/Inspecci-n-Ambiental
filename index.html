@@ -3,64 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inspección Ambiental</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{font-family:Arial;background:#f2f4f3;padding:15px}
-.card{background:white;padding:18px;border-radius:12px;max-width:600px;margin:auto}
-h1{color:#0f5132;text-align:center}
-label{font-weight:bold;display:block;margin-top:12px}
-input,select,textarea{width:100%;padding:10px;margin-top:4px;border:1px solid #ccc;border-radius:8px}
-button{background:#0f5132;color:white;padding:14px;width:100%;border:none;border-radius:8px;margin-top:15px;font-size:16px}
-.item{border:1px solid #ddd;padding:10px;border-radius:8px;margin-top:10px}
-.item img{width:100%;border-radius:8px;margin-top:8px}
-</style>
+<title>Inspección Ambiental - Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>body{font-family:system-ui} .tab-active{background:#16a34a;color:white}</style>
 </head>
-<body>
-<div class="card">
-<h1>🌿 Inspección Ambiental</h1>
-<label>Fecha</label><input type="date" id="fecha">
-<label>Lugar</label><input id="lugar" placeholder="Ej: Lote 4">
-<label>Responsable</label><input id="responsable">
-<label>Tipo</label>
-<select id="tipo"><option>Residuos sólidos</option><option>Derrame / Químicos</option><option>Emisión / Ruido</option><option>Fauna / Flora</option><option>Otro</option></select>
-<label>Descripción</label><textarea id="desc" rows="3"></textarea>
-<label>Foto</label><input type="file" id="foto" accept="image/*">
-<label>Estado</label><select id="estado"><option>Abierto</option><option>En proceso</option><option>Cerrado</option></select>
-<button onclick="guardar()">Guardar Inspección</button>
-<div id="lista"></div>
+<body class="bg-gray-100 pb-24">
+<header class="bg-green-700 text-white p-4 sticky top-0 z-10">
+<h1 class="font-bold text-lg">🌿 Inspección Ambiental</h1>
+<p class="text-xs opacity-80">Acería • 3 Pantallas + Admin</p>
+</header>
+<div id="screen1" class="p-4">
+  <div class="bg-white rounded-xl shadow p-4 space-y-3">
+    <h2 class="font-bold">1. Nueva Inspección</h2>
+    <input id="planta" placeholder="Planta / Área" class="w-full border rounded p-2" value="Acería">
+    <input id="responsable" placeholder="Responsable" class="w-full border rounded p-2">
+    <select id="tipo" class="w-full border rounded p-2"><option>Residuos</option><option>Emisiones</option><option>Aguas</option><option>Ruido</option><option>Suelo</option></select>
+    <textarea id="hallazgo" placeholder="Hallazgo / Observación" class="w-full border rounded p-2"></textarea>
+    <div class="flex gap-2">
+      <select id="nivel" class="flex-1 border rounded p-2"><option>Leve</option><option>Moderado</option><option>Crítico</option></select>
+      <button onclick="getGPS()" class="flex-1 bg-blue-600 text-white rounded p-2">📍 GPS</button>
+    </div>
+    <p id="gpsText" class="text-xs text-gray-500">GPS no capturado</p>
+    <input type="file" id="foto" accept="image/*" class="w-full text-sm">
+    <img id="preview" class="rounded hidden w-full">
+    <button onclick="guardar()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl">💾 GUARDAR INSPECCIÓN</button>
+    <button onclick="descargarPDF()" class="w-full bg-black text-white py-2 rounded-xl text-sm">📄 Descargar PDF</button>
+  </div>
 </div>
+<div id="screen2" class="p-4 hidden">
+  <h2 class="font-bold mb-2">2. Historial</h2>
+  <div id="lista" class="space-y-2"></div>
+</div>
+<div id="screen3" class="p-4 hidden">
+  <div id="loginAdmin" class="bg-white p-4 rounded-xl shadow">
+    <h2 class="font-bold">🔒 Admin</h2>
+    <p class="text-xs text-gray-500">Clave inicial: 1234</p>
+    <input id="clave" type="password" placeholder="Clave admin" class="w-full border rounded p-2 mt-2">
+    <button onclick="entrarAdmin()" class="w-full bg-green-700 text-white py-2 rounded mt-2">Entrar</button>
+  </div>
+  <div id="panelAdmin" class="hidden">
+    <div class="bg-white p-4 rounded-xl shadow space-y-2">
+      <h2 class="font-bold">Panel Administrador</h2>
+      <p class="text-sm">Total: <span id="totalCount"></span></p>
+      <button onclick="exportarExcel()" class="w-full bg-emerald-600 text-white py-2 rounded">📊 Exportar Excel</button>
+      <button onclick="exportarTodasPDF()" class="w-full bg-black text-white py-2 rounded">📄 Exportar todas a PDF</button>
+      <button onclick="borrarTodo()" class="w-full bg-red-600 text-white py-2 rounded">🗑️ Borrar todo</button>
+      <div id="adminLista" class="space-y-2 pt-2"></div>
+    </div>
+  </div>
+</div>
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex">
+  <button onclick="show(1)" id="btn1" class="flex-1 py-3 text-sm font-bold tab-active">📝 Inspección</button>
+  <button onclick="show(2)" id="btn2" class="flex-1 py-3 text-sm font-bold">📋 Historial</button>
+  <button onclick="show(3)" id="btn3" class="flex-1 py-3 text-sm font-bold">⚙️ Admin</button>
+</nav>
 <script>
-const SUPABASE_URL="https://ubqumkotohidgaazujhp.supabase.co";
-const SUPABASE_KEY="sb_publishable_0xOh5SQi-I4vMcnataLasA_iDJebbfU";
-const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-async function guardar(){
-const fecha=document.getElementById('fecha').value;
-const lugar=document.getElementById('lugar').value;
-const responsable=document.getElementById('responsable').value;
-const tipo=document.getElementById('tipo').value;
-const desc=document.getElementById('desc').value;
-const estado=document.getElementById('estado').value;
-const file=document.getElementById('foto').files[0];
-let fotoUrl="";
-if(file){
-const name=Date.now()+"_"+file.name;
-const {error}=await client.storage.from('fotos-hallazgos').upload(name,file);
-if(error){alert("Error foto: "+error.message);return;}
-const {data}=client.storage.from('fotos-hallazgos').getPublicUrl(name);
-fotoUrl=data.publicUrl;
-}
-let datos=JSON.parse(localStorage.getItem('inspecciones')||'[]');
-datos.unshift({fecha,lugar,responsable,tipo,desc,estado,fotoUrl});
-localStorage.setItem('inspecciones',JSON.stringify(datos));
-mostrar();alert("Guardado ✅");
-}
-function mostrar(){
-let datos=JSON.parse(localStorage.getItem('inspecciones')||'[]');
-document.getElementById('lista').innerHTML=datos.map(d=>`<div class="item"><b>${d.tipo} - ${d.estado}</b><br>${d.fecha} - ${d.lugar}<br>${d.responsable}<br>${d.desc}${d.fotoUrl?`<img src="${d.fotoUrl}">`:''}</div>`).join('');
-}
-mostrar();
-document.getElementById('fecha').valueAsDate=new Date();
+let lat="",lon="",fotoData="";
+function show(n){[1,2,3].forEach(i=>{document.getElementById('screen'+i).classList.toggle('hidden',i!==n);document.getElementById('btn'+i).classList.toggle('tab-active',i===n)});if(n==2)renderLista();if(n==3)renderAdmin()}
+function getGPS(){navigator.geolocation.getCurrentPosition(p=>{lat=p.coords.latitude;lon=p.coords.longitude;document.getElementById('gpsText').innerText=`GPS: ${lat}, ${lon}`},()=>alert('Activa GPS'))}
+document.getElementById('foto').addEventListener('change',e=>{let r=new FileReader();r.onload=ev=>{fotoData=ev.target.result;let im=document.getElementById('preview');im.src=fotoData;im.classList.remove('hidden')};r.readAsDataURL(e.target.files[0])});
+function getData(){return JSON.parse(localStorage.getItem('inspecciones')||'[]')}
+function guardar(){let d={fecha:new Date().toLocaleString(),planta:document.getElementById('planta').value,responsable:document.getElementById('responsable').value,tipo:document.getElementById('tipo').value,hallazgo:document.getElementById('hallazgo').value,nivel:document.getElementById('nivel').value,gps:lat+','+lon,foto:fotoData};let arr=getData();arr.push(d);localStorage.setItem('inspecciones',JSON.stringify(arr));alert('Guardado!');show(2)}
+function renderLista(){let arr=getData();document.getElementById('lista').innerHTML=arr.map((x,i)=>`<div class="bg-white p-3 rounded shadow"><b>${x.planta} - ${x.tipo}</b><p class="text-xs">${x.fecha} | ${x.nivel} | ${x.gps}</p><p class="text-sm">${x.hallazgo}</p>${x.foto?`<img src="${x.foto}" class="w-full rounded mt-1">`:''}</div>`).join('')||'<p class="text-gray-500">Sin datos aún</p>'}
+function entrarAdmin(){if(document.getElementById('clave').value==='1234'){document.getElementById('loginAdmin').classList.add('hidden');document.getElementById('panelAdmin').classList.remove('hidden');renderAdmin()}else alert('Clave incorrecta')}
+function renderAdmin(){let arr=getData();document.getElementById('totalCount').innerText=arr.length;document.getElementById('adminLista').innerHTML=arr.map((x,i)=>`<div class="border p-2 rounded text-sm"><b>${x.planta}</b> - ${x.responsable} <button onclick="borrarUno(${i})" class="text-red-600 float-right">Borrar</button></div>`).join('')}
+function borrarUno(i){let a=getData();a.splice(i,1);localStorage.setItem('inspecciones',JSON.stringify(a));renderAdmin();renderLista()}
+function borrarTodo(){if(confirm('¿Borrar todo?')){localStorage.removeItem('inspecciones');renderAdmin();renderLista()}}
+function exportarExcel(){let a=getData();let csv="Fecha,Planta,Responsable,Tipo,Hallazgo,Nivel,GPS\n"+a.map(x=>`"${x.fecha}","${x.planta}","${x.responsable}","${x.tipo}","${x.hallazgo}","${x.nivel}","${x.gps}"`).join("\n");let b=new Blob([csv],{type:'text/csv'});let u=URL.createObjectURL(b);let l=document.createElement('a');l.href=u;l.download='inspecciones.csv';l.click()}
+function descargarPDF(){let {jsPDF}=window.jspdf;let doc=new jsPDF();doc.text("Inspeccion Ambiental - "+document.getElementById('planta').value,10,10);doc.text("Responsable: "+document.getElementById('responsable').value,10,20);doc.text("Tipo: "+document.getElementById('tipo').value,10,30);doc.text("Hallazgo: "+document.getElementById('hallazgo').value,10,40);doc.text("GPS: "+lat+","+lon,10,50);if(fotoData)doc.addImage(fotoData,'JPEG',10,60,180,100);doc.save('inspeccion.pdf')}
+function exportarTodasPDF(){let {jsPDF}=window.jspdf;let doc=new jsPDF();let y=10;getData().forEach(x=>{doc.text(`${x.fecha} - ${x.planta} - ${x.tipo} - ${x.nivel}`,10,y);y+=10});doc.save('todas.pdf')}
+renderLista();
 </script>
 </body>
 </html>
