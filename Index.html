@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspección Ambiental</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Arial;background:#f2f4f3;padding:15px}
+.card{background:white;padding:18px;border-radius:12px;max-width:600px;margin:auto}
+h1{color:#0f5132;text-align:center}
+label{font-weight:bold;display:block;margin-top:12px}
+input,select,textarea{width:100%;padding:10px;margin-top:4px;border:1px solid #ccc;border-radius:8px}
+button{background:#0f5132;color:white;padding:14px;width:100%;border:none;border-radius:8px;margin-top:15px;font-size:16px}
+.item{border:1px solid #ddd;padding:10px;border-radius:8px;margin-top:10px}
+.item img{width:100%;border-radius:8px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🌿 Inspección Ambiental</h1>
+<label>Fecha</label><input type="date" id="fecha">
+<label>Lugar</label><input id="lugar" placeholder="Ej: Lote 4">
+<label>Responsable</label><input id="responsable">
+<label>Tipo</label>
+<select id="tipo"><option>Residuos sólidos</option><option>Derrame / Químicos</option><option>Emisión / Ruido</option><option>Fauna / Flora</option><option>Otro</option></select>
+<label>Descripción</label><textarea id="desc" rows="3"></textarea>
+<label>Foto</label><input type="file" id="foto" accept="image/*">
+<label>Estado</label><select id="estado"><option>Abierto</option><option>En proceso</option><option>Cerrado</option></select>
+<button onclick="guardar()">Guardar Inspección</button>
+<div id="lista"></div>
+</div>
+<script>
+const SUPABASE_URL="https://ubqumkotohidgaazujhp.supabase.co";
+const SUPABASE_KEY="sb_publishable_0xOh5SQi-I4vMcnataLasA_iDJebbfU";
+const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+async function guardar(){
+const fecha=document.getElementById('fecha').value;
+const lugar=document.getElementById('lugar').value;
+const responsable=document.getElementById('responsable').value;
+const tipo=document.getElementById('tipo').value;
+const desc=document.getElementById('desc').value;
+const estado=document.getElementById('estado').value;
+const file=document.getElementById('foto').files[0];
+let fotoUrl="";
+if(file){
+const name=Date.now()+"_"+file.name;
+const {error}=await client.storage.from('fotos-hallazgos').upload(name,file);
+if(error){alert("Error foto: "+error.message);return;}
+const {data}=client.storage.from('fotos-hallazgos').getPublicUrl(name);
+fotoUrl=data.publicUrl;
+}
+let datos=JSON.parse(localStorage.getItem('inspecciones')||'[]');
+datos.unshift({fecha,lugar,responsable,tipo,desc,estado,fotoUrl});
+localStorage.setItem('inspecciones',JSON.stringify(datos));
+mostrar();alert("Guardado ✅");
+}
+function mostrar(){
+let datos=JSON.parse(localStorage.getItem('inspecciones')||'[]');
+document.getElementById('lista').innerHTML=datos.map(d=>`<div class="item"><b>${d.tipo} - ${d.estado}</b><br>${d.fecha} - ${d.lugar}<br>${d.responsable}<br>${d.desc}${d.fotoUrl?`<img src="${d.fotoUrl}">`:''}</div>`).join('');
+}
+mostrar();
+document.getElementById('fecha').valueAsDate=new Date();
+</script>
+</body>
+</html>
