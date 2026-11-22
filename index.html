@@ -10,7 +10,6 @@
       --green-dark: #123F22;
       --green-mid: #1B5630;
       --green-soft: #E8F2EC;
-      --green-pill: #D8ECDF;
       --bg-app: #F3F6F4;
       --white: #FFFFFF;
       --text-main: #142118;
@@ -67,7 +66,6 @@
       display: flex;
     }
 
-    /* Top Header */
     .top-header {
       background: var(--green-dark);
       color: var(--white);
@@ -133,4 +131,1295 @@
       background: rgba(255, 255, 255, 0.14);
       color: #E7F4EC;
       font-size: 10px;
-      font-weight:
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--white);
+      color: var(--green-dark);
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-banner {
+      text-align: center;
+      padding: 14px 16px 6px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    .content-pad {
+      padding: 10px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-card);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(18, 63, 34, 0.05);
+    }
+
+    .card-dark {
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: var(--radius-card);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .field-group {
+      margin-bottom: 12px;
+    }
+
+    .field-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 5px;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: var(--radius-input);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--green-dark);
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .readonly-box {
+      background: #F4F8F5;
+      border: 1.5px solid #D8E5DD;
+      border-radius: var(--radius-input);
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--green-dark);
+      font-weight: 600;
+    }
+
+    .readonly-sub {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: var(--radius-input);
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.985);
+    }
+
+    .btn-primary {
+      background: var(--green-dark);
+      color: var(--white);
+    }
+
+    .btn-secondary {
+      background: var(--green-soft);
+      color: var(--green-dark);
+      border: 1px solid #C6DEC9;
+    }
+
+    .btn-outline {
+      background: var(--white);
+      color: var(--green-dark);
+      border: 1.5px solid var(--green-dark);
+    }
+
+    .btn-sm {
+      padding: 7px 11px;
+      font-size: 12px;
+      border-radius: 10px;
+      width: auto;
+    }
+
+    .btn-danger-soft {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid #F6CACA;
+    }
+
+    .btn-edit-soft {
+      background: var(--green-soft);
+      color: var(--green-dark);
+      border: 1px solid #C5DEC9;
+    }
+
+    .login-screen {
+      background: var(--white);
+      padding: 24px 22px 32px;
+      justify-content: space-between;
+      min-height: 100vh;
+    }
+
+    .login-top-bar {
+      display: flex;
+      justify-content: flex-end;
+      min-height: 28px;
+    }
+
+    .login-hero {
+      text-align: center;
+      margin: 8px 0 18px;
+    }
+
+    .shield-logo {
+      width: 78px;
+      height: 86px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--green-dark);
+      line-height: 1.15;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .role-toggle-wrap {
+      background: #EEF3F0;
+      border-radius: 999px;
+      padding: 4px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .role-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .role-btn.active {
+      background: var(--green-dark);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(18, 63, 34, 0.2);
+    }
+
+    .password-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrap input {
+      padding-right: 42px;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+      padding: 4px;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 12px 0 8px;
+    }
+
+    .switch-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #CBD5CF;
+      transition: 0.25s;
+      border-radius: 999px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--green-dark);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .login-footer-link {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .photo-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .photo-preview {
+      width: 82px;
+      height: 68px;
+      border-radius: 12px;
+      background: #EEF3F0;
+      border: 1.5px dashed #B5C7BC;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-align: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill-btn {
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text-main);
+      border-radius: var(--radius-pill);
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pill-btn.active {
+      background: var(--green-dark);
+      color: var(--white);
+      border-color: var(--green-dark);
+    }
+
+    .cascade-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .finding-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 14px;
+      background: #F7FAF8;
+      border: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .finding-thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #E2EAE5;
+      flex-shrink: 0;
+    }
+
+    .finding-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .finding-desc {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .finding-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .summary-photo {
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      border-radius: 14px;
+      background: #E9EFEA;
+      margin-bottom: 10px;
+    }
+
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #EEF2EF;
+      font-size: 12.5px;
+    }
+
+    .kv-row:last-child {
+      border-bottom: none;
+    }
+
+    .kv-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kv-val {
+      color: var(--text-main);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .btn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .dash-banner-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .dash-banner-sub {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .filter-full {
+      grid-column: 1 / -1;
+    }
+
+    .stats-two-col {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 10px;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 115px;
+      padding-top: 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 6px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar-val {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--green-dark);
+      margin-bottom: 3px;
+    }
+
+    .bar-fill {
+      width: 100%;
+      max-width: 28px;
+      background: var(--green-dark);
+      border-radius: 6px 6px 0 0;
+      min-height: 6px;
+      transition: height 0.3s ease;
+    }
+
+    .bar-lbl {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 4px;
+      line-height: 1.1;
+      max-width: 66px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .donut-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-ring {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .donut-hole {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-num {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--green-dark);
+      line-height: 1;
+    }
+
+    .donut-txt {
+      font-size: 9px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .legend-list {
+      width: 100%;
+      margin-top: 8px;
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .insp-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 11px;
+      margin-top: 8px;
+      background: #FCFDFC;
+    }
+
+    .insp-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .insp-id {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .score-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .score-exc {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .score-acc {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .score-def {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .insp-details {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    .insp-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .admin-grid-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .admin-pill-btn {
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 10px 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .admin-pill-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .admin-editor-box {
+      background: var(--white);
+      color: var(--text-main);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .list-chip-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid #EEF2EF;
+      font-size: 12px;
+      gap: 8px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 440px;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 6px 4px 8px;
+      z-index: 40;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .bottom-nav.hidden {
+      display: none;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 3px 2px;
+    }
+
+    .nav-item.active {
+      color: var(--green-dark);
+    }
+
+    .nav-icon {
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 78px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--green-dark);
+      color: var(--white);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 90;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 18px;
+      width: 100%;
+      max-width: 390px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--green-dark);
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+
+    <!-- PANTALLA 0: LOGIN -->
+    <section id="screen-login" class="screen login-screen active">
+      <div>
+        <div class="login-top-bar">
+          <span id="loginAdminBadge" class="badge-admin" style="background:#123F22;border-color:#123F22;display:none;">ADMIN</span>
+        </div>
+
+        <div class="login-hero">
+          <div class="shield-logo">
+            <svg viewBox="0 0 80 90" width="76" height="86" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40 4L10 16V42C10 62.5 22.8 80.5 40 86C57.2 80.5 70 62.5 70 42V16L40 4Z" stroke="#123F22" stroke-width="5" fill="#E9F3EC"/>
+              <path d="M40 22C28 24 23 35 25 46C34 46 43 40 46 31C42 36 36 40 29 42C33 34 38 28 45 25C43 23 41.5 22.3 40 22Z" fill="#123F22"/>
+              <path d="M40 58V44" stroke="#123F22" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h1 class="login-title">Inspección<br>Ambiental</h1>
+          <p class="login-subtitle">Inicia sesión para continuar</p>
+        </div>
+
+        <div class="role-toggle-wrap" role="group" aria-label="Rol">
+          <button type="button" id="roleUserBtn" class="role-btn active" onclick="setLoginRole('Usuario')">Usuario</button>
+          <button type="button" id="roleAdminBtn" class="role-btn" onclick="setLoginRole('Admin')">Admin</button>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="field-group">
+            <label for="loginEmail">Correo electrónico</label>
+            <input type="email" id="loginEmail" placeholder="correo@empresa.com" required />
+          </div>
+
+          <div class="field-group">
+            <label for="loginPassword">Contraseña</label>
+            <div class="password-wrap">
+              <input type="password" id="loginPassword" placeholder="••••••••" required />
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('loginPassword')" title="Mostrar/ocultar">👁</button>
+            </div>
+          </div>
+
+          <div id="adminKeyGroup" class="field-group" style="display:none;">
+            <label for="adminSecretKey">Clave de Administrador</label>
+            <div class="password-wrap">
+              <input type="password" id="adminSecretKey" placeholder="Clave admin (ej. admin123)" />
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('adminSecretKey')" title="Mostrar/ocultar">👁</button>
+            </div>
+            <p class="hint-text">Requerida para activar el modo administrador con acceso total.</p>
+          </div>
+
+          <div class="switch-row">
+            <span class="switch-label">Mantener sesión iniciada</span>
+            <label class="switch">
+              <input type="checkbox" id="keepSessionSwitch" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div style="text-align:right;margin-bottom:14px;">
+            <button type="button" class="link-btn" onclick="openRecoverModal()">¿Olvidaste tu contraseña?</button>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="padding:14px;font-size:15px;">Ingresar</button>
+        </form>
+
+        <div class="login-footer-link">
+          ¿No tienes una cuenta? <button type="button" class="link-btn" onclick="openRegisterModal()">Regístrate aquí</button>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:16px;">
+        Almacenamiento local activo (GitHub Pages / localStorage)
+      </div>
+    </section>
+
+    <!-- PANTALLA 1: PASO 1 DE 3 INFORMACIÓN GENERAL -->
+    <section id="screen-step1" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <button type="button" class="icon-btn" onclick="goToScreen('screen-login')" title="Atrás">←</button>
+          <span class="header-title">Nueva Inspeccion Ambiental</span>
+        </div>
+        <div class="header-right" id="headerRightStep1"></div>
+      </header>
+
+      <div class="step-banner">Paso 1 de 3 — Información General</div>
+
+      <div class="content-pad">
+        <div class="card">
+          <div class="field-group">
+            <label for="selDivision">División</label>
+            <select id="selDivision" onchange="onDivisionChange()"></select>
+          </div>
+
+          <div class="field-group">
+            <label for="selArea">Área</label>
+            <select id="selArea" onchange="onAreaChange()"></select>
+          </div>
+
+          <div class="field-group">
+            <label>Responsable (Automático por Área)</label>
+            <div id="autoResponsableBox" class="readonly-box">
+              <span id="autoRespName">María López</span>
+              <span id="autoRespEmail" class="readonly-sub">maria@empresa.com</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="selInspector">Inspector</label>
+            <select id="selInspector" onchange="onInspectorChange()"></select>
+            <p class="hint-text" id="autoInspectorEmail">ana.lopez@empresa.com</p>
+          </div>
+
+          <div class="field-group">
+            <label>ID Número (Automático)</label>
+            <div id="autoInspectionId" class="readonly-box">INS-2024-087</div>
+          </div>
+
+          <div class="field-group">
+            <label for="inpFecha">Fecha</label>
+            <input type="date" id="inpFecha" />
+          </div>
+
+          <div style="margin-top:14px;">
+            <button type="button" class="btn btn-primary" onclick="continueToStep2()">Continuar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: PASO 2 DE 3 HALLAZGOS -->
+    <section id="screen-step2" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <button type="button" class="icon-btn" onclick="goToScreen('screen-step1')" title="Atrás">←</button>
+          <span class="header-title">Nueva Inspeccion Ambiental</span>
+        </div>
+        <div class="header-right" id="headerRightStep2"></div>
+      </header>
+
+      <div class="step-banner">Paso 2 de 3 — Hallazgos</div>
+
+      <div class="content-pad">
+        <div class="card">
+          <div class="field-group">
+            <label>Fotografía del hallazgo</label>
+            <div class="photo-box">
+              <div class="photo-preview" id="findingPhotoPreview">Sin foto</div>
+              <div>
+                <input type="file" id="findingPhotoInput" accept="image/*" style="display:none;" onchange="handleFindingPhoto(event)" />
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('findingPhotoInput').click()">
+                  📷 Agregar foto
+                </button>
+                <p class="hint-text">Vista previa instantánea</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="findingDesc">Descripción</label>
+            <textarea id="findingDesc" placeholder="Describe el hallazgo ambiental observado..."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label>Severidad</label>
+            <div class="pill-group" id="severityPills">
+              <button type="button" class="pill-btn active" data-sev="Leve" data-pts="0.5" onclick="selectSeverity('Leve', 0.5)">Leve 0.5</button>
+              <button type="button" class="pill-btn" data-sev="Medio" data-pts="1" onclick="selectSeverity('Medio', 1)">Medio 1</button>
+              <button type="button" class="pill-btn" data-sev="Crítico" data-pts="2" onclick="selectSeverity('Crítico', 2)">Crítico 2</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Ubicación en cascada (3 niveles)</label>
+            <div class="cascade-grid">
+              <select id="locLevel1" onchange="updateCascadeLocations('level1')">
+                <option value="Planta">Planta</option>
+                <option value="Planta Norte">Planta Norte</option>
+                <option value="Planta Sur">Planta Sur</option>
+              </select>
+              <select id="locLevel2" onchange="updateCascadeLocations('level2')">
+                <option value="Zona de carga">Zona de carga</option>
+                <option value="Zona de proceso">Zona de proceso</option>
+                <option value="Patio de maniobras">Patio de maniobras</option>
+              </select>
+              <select id="locLevel3">
+                <option value="Área exterior">Área exterior</option>
+                <option value="Nave cubierta">Nave cubierta</option>
+                <option value="Perímetro">Perímetro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="findingType">Tipo de hallazgo</label>
+            <select id="findingType">
+              <option value="Residuos">Residuos</option>
+              <option value="Derrame">Derrame</option>
+              <option value="Emisiones">Emisiones</option>
+              <option value="Orden y aseo">Orden y aseo</option>
+            </select>
+          </div>
+
+          <div style="margin-top:14px;">
+            <button type="button" class="btn btn-primary" onclick="prepareActionPlanFromFinding()">Guardar hallazgo y ir a Plan de Acción</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 id="findingsCountTitle" style="font-size:14px;font-weight:800;color:var(--green-dark);">Hallazgos registrados (0)</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="goToScreen('screen-dashboard')">Ir al Dashboard</button>
+          </div>
+          <div id="registeredFindingsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2.5: PLAN DE ACCIÓN -->
+    <section id="screen-action-plan" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <button type="button" class="icon-btn" onclick="goToScreen('screen-step2')" title="Atrás">←</button>
+          <span class="header-title">Plan de Acción</span>
+        </div>
+        <div class="header-right" id="headerRightPlan"></div>
+      </header>
+
+      <div class="step-banner">Paso 2.5 — Plan de Acción del Hallazgo</div>
+
+      <div class="content-pad">
+        <div class="card">
+          <img id="planPreviewPhoto" class="summary-photo" src="" alt="Foto del hallazgo" />
+
+          <div class="kv-row">
+            <span class="kv-label">Descripción</span>
+            <span class="kv-val" id="planSummaryDesc">—</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-label">Severidad</span>
+            <span class="kv-val" id="planSummarySeverity">—</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-label">Ubicación Cascada</span>
+            <span class="kv-val" id="planSummaryLocation">—</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-label">Tipo</span>
+            <span class="kv-val" id="planSummaryType">—</span>
+          </div>
+
+          <div class="field-group" style="margin-top:12px;">
+            <label for="planWhatToDo">¿Qué se debe hacer?</label>
+            <textarea id="planWhatToDo" placeholder="Define la acción correctiva o preventiva..."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label for="planResponsible">Responsable del plan</label>
+            <input type="text" id="planResponsible" value="Ing Laura Mendez" />
+          </div>
+
+          <div class="field-group">
+            <label for="planDueDate">Fecha compromiso</label>
+            <input type="date" id="planDueDate" />
+          </div>
+
+          <div class="btn-stack">
+            <button type="button" class="btn btn-secondary" onclick="saveActionPlan(true)">+ Agregar otro hallazgo</button>
+            <button type="button" class="btn btn-primary" onclick="saveActionPlan(false)">Guardar y continuar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 3: DASHBOARD ADMIN & GESTIÓN -->
+    <section id="screen-dashboard" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <span class="header-title">Inspecciones Ambientales</span>
+        </div>
+        <div class="header-right" id="headerRightDash"></div>
+      </header>
+
+      <div class="content-pad">
+        <div class="card-dark">
+          <div class="dash-banner-title">Dashboard • Estadísticas y Gestión</div>
+          <div class="dash-banner-sub" id="dashModeBanner">
+            <span>●</span>
+            <span id="dashModeText">Modo Administrador Activo</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:13.5px;font-weight:800;color:var(--green-dark);margin-bottom:8px;">Filtros</h3>
+          <div class="filter-grid">
+            <div>
+              <label for="fltDivision">División</label>
+              <select id="fltDivision" onchange="populateFilterAreas()"></select>
+            </div>
+            <div>
+              <label for="fltArea">Área</label>
+              <select id="fltArea"></select>
+            </div>
+            <div>
+              <label for="fltResponsable">Responsable</label>
+              <select id="fltResponsable"></select>
+            </div>
+            <div>
+              <label for="fltInspector">Inspector</label>
+              <select id="fltInspector"></select>
+            </div>
+            <div>
+              <label for="fltDateFrom">Desde</label>
+              <input type="date" id="fltDateFrom" />
+            </div>
+            <div>
+              <label for="fltDateTo">Hasta</label>
+              <input type="date" id="fltDateTo" />
+            </div>
+            <div class="filter-full" style="display:flex;gap:8px;margin-top:4px;">
+              <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="applyDashboardFilters()">Aplicar Filtros</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetDashboardFilters()">Limpiar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-two-col">
+          <div class="card">
+            <h3 style="font-size:12.5px;font-weight:800;color:var(--green-dark);">Puntaje por División</h3>
+            <div id="divisionBarsChart" class="bar-chart"></div>
+          </div>
+
+          <div class="card donut-wrap">
+            <h3 style="font-size:12.5px;font-weight:800;color:var(--green-dark);margin-bottom:6px;align-self:flex-start;">Distribución</h3>
+            <div id="donutRing" class="donut-ring">
+              <div class="donut-hole">
+                <span id="donutAvgScore" class="donut-num">74</span>
+                <span class="donut-txt">Puntaje</span>
+              </div>
+            </div>
+            <div id="donutLegend" class="legend-list"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h3 id="inspectionsListTitle" style="font-size:13.5px;font-weight:800;color:var(--green-dark);">Inspecciones</h3>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="startNewInspection()">+ Nueva</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="exportDashboardPDF()">📄 Exportar PDF</button>
+            </div>
+          </div>
+          <div id="inspectionsListContainer"></div>
+        </div>
+
+        <div id="adminManagementPanel" class="card-dark" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="font-size:14px;font-weight:800;">Panel Administrador</h3>
+            <span class="badge-admin">CONFIGURACIÓN</span>
+          </div>
+          <p style="font-size:11.5px;opacity:0.88;margin-top:3px;">
+            Agrega o edita opciones sin tocar código. Los cambios actualizan responsable y correo por área al instante.
+          </p>
+
+          <div class="admin-grid-btns">
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('divisions')">🏢 Gestionar Divisiones</button>
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('areas')">📍 Gestionar Áreas</button>
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('responsibles')">👤 Gestionar Responsables</button>
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('inspectors')">🦺 Gestionar Inspectores</button>
+          </div>
+
+          <div id="adminManagerWorkspace" class="admin-editor-box" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA PERFIL -->
+    <section id="screen-profile" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <span class="header-title">Perfil de Sesión</span>
+        </div>
+        <div class="header-right" id="headerRightProfile"></div>
+      </header>
+
+      <div class="content-pad">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="avatar-circle" id="profileAvatar" style="width:48px;height:48px;font-size:16px;background:var(--green-dark);color:var(--white);">US</div>
+            <div>
+              <div id="profileEmailDisplay" style="font-size:14px;font-weight:800;color:var(--green-dark);">usuario@empresa.com</div>
+              <div id="profileRoleDisplay" style="font-size:12px;color:var(--text-muted);margin-top:2px;">Rol: Usuario</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+            <button type="button" class="btn btn-primary" onclick="startNewInspection()">+ Iniciar Nueva Inspección</button>
+            <button type="button" class="btn btn-outline" onclick="exportDashboardPDF()">📄 Exportar Reporte PDF</button>
+            <button type="button" class="btn btn-danger-soft" onclick="logoutSession()">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav id="bottomNav" class="bottom-nav hidden" aria-label="Navegación principal">
+      <button type="button" class="nav-item" data-nav="inicio" onclick="onBottomNav('inicio')">
+        <span class="nav-icon">🏠</span>
+        <span>Inicio</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="inspecciones" onclick="onBottomNav('inspecciones')">
+        <span class="nav-icon">📋</span>
+        <span>Inspecciones</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="estadisticas" onclick="onBottomNav('estadisticas')">
+        <span class="nav-icon">📊</span>
+        <span>Estadísticas</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="admin" onclick="onBottomNav('admin')">
+        <span class="nav-icon">⚙</span>
+        <span>Admin</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="perfil" onclick="onBottomNav('perfil')">
+        <span class="nav-icon">👤</span>
+        <span>Perfil</span>
+      </button>
+    </nav>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="appModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+      <div class="modal-card" id="appModalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    function cloneData(obj) {
+      try {
+        return JSON.parse(JSON.stringify(obj));
+      } catch (e) {
+        return obj;
+      }
+    }
+
+    const STORAGE_KEYS = {
+      SESSION: 'env_insp_session_v1',
+      CATALOG: 'env_insp_catalog_v1',
+      INSPECTIONS: 'env_insp_records_v1',
+      USERS: 'env_insp_users_v1',
+      ADMIN_KEY: 'env_insp_admin_key_v1'
+    };
+
+    const DEFAULT_CATALOG = {
+      divisions: [
+        'Operaciones Mineras',
+        'Acería',
+        'Laminación',
+        'Servicios Generales'
+      ],
+      areasByDivision: {
+        'Operaciones Mineras': ['Planta Norte', 'Almacén Central', 'Zona Norte'],
+        'Acería': ['Horno Eléctrico', 'Colada Continua', 'Ajuste', 'Patio Chatarra'],
+        'Laminación': ['Tren 1', 'Tren 2', 'Horno Recalentamiento'],
+        'Servicios Generales': ['PTAR', 'Almacén', 'Talleres']
+      },
+      areaResponsibles: {
+        'Planta Norte': { name: 'María López', email: 'maria@empresa.com' },
+        'Almacén Central': { name: 'María López', email: 'maria@empresa.com' },
+        'Zona Norte': { name: 'María López', email: 'maria@empresa.com' },
+        'Horno Eléctrico': { name: 'Juan Perez', email: 'juan.perez@empresa.com' },
+        'Colada Continua': { name: 'Ana Gomez', email: 'ana.gomez@empresa.com' },
+        'Ajuste': { name: 'Luis Torres', email: 'luis.torres@empresa.com' },
+        'Patio Chatarra': { name: 'Pedro Diaz', email: 'pedro.diaz@empresa.com' },
+        'Tren 1': { name: 'Maria Lopez', email: 'maria.lopez@empresa.com' },
+        'Tren 2': { name: 'Carlos Ruiz', email: 'carlos.ruiz@empresa.com' },
+        'Horno Recalentamiento': { name: 'Jorge Ramirez', email: 'jorge.ramirez@empresa.com' },
+        'PTAR': { name: 'Laura Mendez', email:
