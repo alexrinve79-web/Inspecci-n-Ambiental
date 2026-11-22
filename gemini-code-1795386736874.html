@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Inspección Ambiental</title>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --green-dark: #123F22;
+      --green-mid: #1B5630;
+      --green-soft: #E8F2EC;
+      --green-pill: #D8ECDF;
+      --bg-app: #F3F6F4;
+      --white: #FFFFFF;
+      --text-main: #142118;
+      --text-muted: #5C6E63;
+      --border: #DCE5DF;
+      --danger: #C62828;
+      --danger-soft: #FDECEC;
+      --warning: #C98A00;
+      --warning-soft: #FFF7E0;
+      --success: #1B7A3E;
+      --success-soft: #E6F5EC;
+      --radius-card: 18px;
+      --radius-input: 12px;
+      --radius-pill: 999px;
+      --shadow: 0 6px 20px rgba(18, 63, 34, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #E4EBE6;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background: var(--bg-app);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.12);
+      overflow-x: hidden;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-bottom: 84px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Top Header */
+    .top-header {
+      background: var(--green-dark);
+      color: var(--white);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: var(--white);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .badge-admin {
+      background: rgba(255, 255, 255, 0.18);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .badge-user {
+      background: rgba(255, 255, 255, 0.14);
+      color: #E7F4EC;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--white);
+      color: var(--green-dark);
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Step Title */
+    .step-banner {
+      text-align: center;
+      padding: 14px 16px 6px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    /* Cards & Containers */
+    .content-pad {
+      padding: 10px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-card);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(18, 63, 34, 0.05);
+    }
+
+    .card-dark {
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: var(--radius-card);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .field-group {
+      margin-bottom: 12px;
+    }
+
+    .field-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 5px;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: var(--radius-input);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--green-dark);
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .readonly-box {
+      background: #F4F8F5;
+      border: 1.5px solid #D8E5DD;
+      border-radius: var(--radius-input);
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--green-dark);
+      font-weight: 600;
+    }
+
+    .readonly-sub {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: var(--radius-input);
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.985);
+    }
+
+    .btn-primary {
+      background: var(--green-dark);
+      color: var(--white);
+    }
+
+    .btn-secondary {
+      background: var(--green-soft);
+      color: var(--green-dark);
+      border: 1px solid #C6DEC9;
+    }
+
+    .btn-outline {
+      background: var(--white);
+      color: var(--green-dark);
+      border: 1.5px solid var(--green-dark);
+    }
+
+    .btn-sm {
+      padding: 7px 11px;
+      font-size: 12px;
+      border-radius: 10px;
+      width: auto;
+    }
+
+    .btn-danger-soft {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid #F6CACA;
+    }
+
+    .btn-edit-soft {
+      background: var(--green-soft);
+      color: var(--green-dark);
+      border: 1px solid #C5DEC9;
+    }
+
+    /* Login Screen (Foto 5) */
+    .login-screen {
+      background: var(--white);
+      padding: 24px 22px 32px;
+      justify-content: space-between;
+      min-height: 100vh;
+    }
+
+    .login-top-bar {
+      display: flex;
+      justify-content: flex-end;
+      min-height: 28px;
+    }
+
+    .login-hero {
+      text-align: center;
+      margin: 8px 0 18px;
+    }
+
+    .shield-logo {
+      width: 78px;
+      height: 86px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--green-dark);
+      line-height: 1.15;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .role-toggle-wrap {
+      background: #EEF3F0;
+      border-radius: 999px;
+      padding: 4px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .role-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .role-btn.active {
+      background: var(--green-dark);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(18, 63, 34, 0.2);
+    }
+
+    .password-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrap input {
+      padding-right: 42px;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+      padding: 4px;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 12px 0 8px;
+    }
+
+    .switch-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #CBD5CF;
+      transition: 0.25s;
+      border-radius: 999px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--green-dark);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .login-footer-link {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Pills & Photo Upload (Foto 2) */
+    .photo-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .photo-preview {
+      width: 82px;
+      height: 68px;
+      border-radius: 12px;
+      background: #EEF3F0;
+      border: 1.5px dashed #B5C7BC;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-align: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill-btn {
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text-main);
+      border-radius: var(--radius-pill);
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pill-btn.active {
+      background: var(--green-dark);
+      color: var(--white);
+      border-color: var(--green-dark);
+    }
+
+    .cascade-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .finding-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 14px;
+      background: #F7FAF8;
+      border: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .finding-thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #E2EAE5;
+      flex-shrink: 0;
+    }
+
+    .finding-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .finding-desc {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .finding-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Action Plan Preview (Foto 3) */
+    .summary-photo {
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      border-radius: 14px;
+      background: #E9EFEA;
+      margin-bottom: 10px;
+    }
+
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #EEF2EF;
+      font-size: 12.5px;
+    }
+
+    .kv-row:last-child {
+      border-bottom: none;
+    }
+
+    .kv-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kv-val {
+      color: var(--text-main);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .btn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    /* Dashboard & Admin (Foto 4) */
+    .dash-banner-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .dash-banner-sub {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .filter-full {
+      grid-column: 1 / -1;
+    }
+
+    .stats-two-col {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 10px;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 115px;
+      padding-top: 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 6px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar-val {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--green-dark);
+      margin-bottom: 3px;
+    }
+
+    .bar-fill {
+      width: 100%;
+      max-width: 28px;
+      background: var(--green-dark);
+      border-radius: 6px 6px 0 0;
+      min-height: 6px;
+      transition: height 0.3s ease;
+    }
+
+    .bar-lbl {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 4px;
+      line-height: 1.1;
+      max-width: 66px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .donut-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-ring {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .donut-hole {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-num {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--green-dark);
+      line-height: 1;
+    }
+
+    .donut-txt {
+      font-size: 9px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .legend-list {
+      width: 100%;
+      margin-top: 8px;
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .insp-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 11px;
+      margin-top: 8px;
+      background: #FCFDFC;
+    }
+
+    .insp-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .insp-id {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .score-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .score-exc {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .score-acc {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .score-def {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .insp-details {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    .insp-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .admin-grid-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .admin-pill-btn {
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 10px 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .admin-pill-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .admin-editor-box {
+      background: var(--white);
+      color: var(--text-main);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .list-chip-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid #EEF2EF;
+      font-size: 12px;
+      gap: 8px;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 440px;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 6px 4px 8px;
+      z-index: 40;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .bottom-nav.hidden {
+      display: none;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 3px 2px;
+    }
+
+    .nav-item.active {
+      color: var(--green-dark);
+    }
+
+    .nav-icon {
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    /* Toast / Modal */
+    .toast {
+      position: fixed;
+      bottom: 78px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--green-dark);
+      color: var(--white);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 90;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 18px;
+      width: 100%;
+      max-width: 390px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--green-dark);
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+
+    <!-- PANTALLA 0: LOGIN (Foto 5) -->
+    <section id="screen-login" class="screen login-screen active">
+      <div>
+        <div class="login-top-bar">
+          <span id="loginAdminBadge" class="badge-admin" style="background:#123F22;border-color:#123F22;display:none;">ADMIN</span>
+        </div>
+
+        <div class="login-hero">
+          <div class="shield-logo">
+            <svg viewBox="0 0 80 90" width="76" height="86" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M40 4L10 16V42C10 62.5 22.8 80.5 40 86C57.2 80.5 70 62.5 70 42V16L40 4Z" stroke="#123F22" stroke-width="5" fill="#E9F3EC"/>
+              <path d="M40 22C28 24 23 35 25 46C34 46 43 40 46 31C42 36 36 40 29 42C33 34 38 28 45 25C43 23 41.5 22.3 40 22Z" fill="#123F22"/>
+              <path d="M40 58V44" stroke="#123F22" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h1 class="login-title">Inspección<br>Ambiental</h1>
+          <p class="login-subtitle">Inicia sesión para continuar</p>
+        </div>
+
+        <div class="role-toggle-wrap" role="group" aria-label="Rol">
+          <button type="button" id="roleUserBtn" class="role-btn active" onclick="setLoginRole('Usuario')">Usuario</button>
+          <button type="button" id="roleAdminBtn" class="role-btn" onclick="setLoginRole('Admin')">Admin</button>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="field-group">
+            <label for="loginEmail">Correo electrónico</label>
+            <input type="email" id="loginEmail" placeholder="correo@empresa.com" required />
+          </div>
+
+          <div class="field-group">
+            <label for="loginPassword">Contraseña</label>
+            <div class="password-wrap">
+              <input type="password" id="loginPassword" placeholder="••••••••" required />
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('loginPassword')" title="Mostrar/ocultar">👁</button>
+            </div>
+          </div>
+
+          <div id="adminKeyGroup" class="field-group" style="display:none;">
+            <label for="adminSecretKey">Clave de Administrador</label>
+            <div class="password-wrap">
+              <input type="password" id="adminSecretKey" placeholder="Clave admin (ej. admin123)" />
+              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('adminSecretKey')" title="Mostrar/ocultar">👁</button>
+            </div>
+            <p class="hint-text">Requerida para activar el modo administrador con acceso total.</p>
+          </div>
+
+          <div class="switch-row">
+            <span class="switch-label">Mantener sesión iniciada</span>
+            <label class="switch">
+              <input type="checkbox" id="keepSessionSwitch" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div style="text-align:right;margin-bottom:14px;">
+            <button type="button" class="link-btn" onclick="openRecoverModal()">¿Olvidaste tu contraseña?</button>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="padding:14px;font-size:15px;">Ingresar</button>
+        </form>
+
+        <div class="login-footer-link">
+          ¿No tienes una cuenta? <button type="button" class="link-btn" onclick="openRegisterModal()">Regístrate aquí</button>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:16px;">
+        Almacenamiento local activo (GitHub Pages / localStorage)
+      </div>
+    </section>
+
+    <!-- PANTALLA 1: PASO 1 DE 3 INFORMACIÓN GENERAL (Foto 1) -->
+    <section id="screen-step1" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <button type="button" class="icon-btn" onclick="goToScreen('screen-login')" title="Atrás">←</button>
+          <span class="header-title">Nueva Inspeccion Ambiental</span>
+        </div>
+        <div class="header-right" id="headerRightStep1"></div>
+      </header>
+
+      <div class="step-banner">Paso 1 de 3 — Información General</div>
+
+      <div class="content-pad">
+        <div class="card">
+          <div class="field-group">
+            <label for="selDivision">División</label>
+            <select id="selDivision" onchange="onDivisionChange()"></select>
+          </div>
+
+          <div class="field-group">
+            <label for="selArea">Área</label>
+            <select id="selArea" onchange="onAreaChange()"></select>
+          </div>
+
+          <div class="field-group">
+            <label>Responsable (Automático por Área)</label>
+            <div id="autoResponsableBox" class="readonly-box">
+              <span id="autoRespName">María López</span>
+              <span id="autoRespEmail" class="readonly-sub">maria@empresa.com</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="selInspector">Inspector</label>
+            <select id="selInspector" onchange="onInspectorChange()"></select>
+            <p class="hint-text" id="autoInspectorEmail">ana.lopez@empresa.com</p>
+          </div>
+
+          <div class="field-group">
+            <label>ID Número (Automático)</label>
+            <div id="autoInspectionId" class="readonly-box">INS-2024-087</div>
+          </div>
+
+          <div class="field-group">
+            <label for="inpFecha">Fecha</label>
+            <input type="date" id="inpFecha" />
+          </div>
+
+          <div style="margin-top:14px;">
+            <button type="button" class="btn btn-primary" onclick="continueToStep2()">Continuar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: PASO 2 DE 3 HALLAZGOS (Foto 2) -->
+    <section id="screen-step2" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <button type="button" class="icon-btn" onclick="goToScreen('screen-step1')" title="Atrás">←</button>
+          <span class="header-title">Nueva Inspeccion Ambiental</span>
+        </div>
+        <div class="header-right" id="headerRightStep2"></div>
+      </header>
+
+      <div class="step-banner">Paso 2 de 3 — Hallazgos</div>
+
+      <div class="content-pad">
+        <div class="card">
+          <div class="field-group">
+            <label>Fotografía del hallazgo</label>
+            <div class="photo-box">
+              <div class="photo-preview" id="findingPhotoPreview">Sin foto</div>
+              <div>
+                <input type="file" id="findingPhotoInput" accept="image/*" style="display:none;" onchange="handleFindingPhoto(event)" />
+                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('findingPhotoInput').click()">
+                  📷 Agregar foto
+                </button>
+                <p class="hint-text">Vista previa instantánea</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="findingDesc">Descripción</label>
+            <textarea id="findingDesc" placeholder="Describe el hallazgo ambiental observado..."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label>Severidad</label>
+            <div class="pill-group" id="severityPills">
+              <button type="button" class="pill-btn active" data-sev="Leve" data-pts="0.5" onclick="selectSeverity('Leve', 0.5)">Leve 0.5</button>
+              <button type="button" class="pill-btn" data-sev="Medio" data-pts="1" onclick="selectSeverity('Medio', 1)">Medio 1</button>
+              <button type="button" class="pill-btn" data-sev="Crítico" data-pts="2" onclick="selectSeverity('Crítico', 2)">Crítico 2</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Ubicación en cascada (3 niveles)</label>
+            <div class="cascade-grid">
+              <select id="locLevel1" onchange="updateCascadeLocations('level1')">
+                <option value="Planta">Planta</option>
+                <option value="Planta Norte">Planta Norte</option>
+                <option value="Planta Sur">Planta Sur</option>
+              </select>
+              <select id="locLevel2" onchange="updateCascadeLocations('level2')">
+                <option value="Zona de carga">Zona de carga</option>
+                <option value="Zona de proceso">Zona de proceso</option>
+                <option value="Patio de maniobras">Patio de maniobras</option>
+              </select>
+              <select id="locLevel3">
+                <option value="Área exterior">Área exterior</option>
+                <option value="Nave cubierta">Nave cubierta</option>
+                <option value="Perímetro">Perímetro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="findingType">Tipo de hallazgo</label>
+            <select id="findingType">
+              <option value="Residuos">Residuos</option>
+              <option value="Derrame">Derrame</option>
+              <option value="Emisiones">Emisiones</option>
+              <option value="Orden y aseo">Orden y aseo</option>
+            </select>
+          </div>
+
+          <div style="margin-top:14px;">
+            <button type="button" class="btn btn-primary" onclick="prepareActionPlanFromFinding()">Guardar hallazgo y ir a Plan de Acción</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 id="findingsCountTitle" style="font-size:14px;font-weight:800;color:var(--green-dark);">Hallazgos registrados (0)</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="goToScreen('screen-dashboard')">Ir al Dashboard</button>
+          </div>
+          <div id="registeredFindingsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2.5: PLAN DE ACCIÓN (Foto 3) -->
+    <section id="screen-action-plan" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <button type="button" class="icon-btn" onclick="goToScreen('screen-step2')" title="Atrás">←</button>
+          <span class="header-title">Plan de Acción</span>
+        </div>
+        <div class="header-right" id="headerRightPlan"></div>
+      </header>
+
+      <div class="step-banner">Paso 2.5 — Plan de Acción del Hallazgo</div>
+
+      <div class="content-pad">
+        <div class="card">
+          <img id="planPreviewPhoto" class="summary-photo" src="" alt="Foto del hallazgo" />
+
+          <div class="kv-row">
+            <span class="kv-label">Descripción</span>
+            <span class="kv-val" id="planSummaryDesc">—</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-label">Severidad</span>
+            <span class="kv-val" id="planSummarySeverity">—</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-label">Ubicación Cascada</span>
+            <span class="kv-val" id="planSummaryLocation">—</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-label">Tipo</span>
+            <span class="kv-val" id="planSummaryType">—</span>
+          </div>
+
+          <div class="field-group" style="margin-top:12px;">
+            <label for="planWhatToDo">¿Qué se debe hacer?</label>
+            <textarea id="planWhatToDo" placeholder="Define la acción correctiva o preventiva..."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label for="planResponsible">Responsable del plan</label>
+            <input type="text" id="planResponsible" value="Ing Laura Mendez" />
+          </div>
+
+          <div class="field-group">
+            <label for="planDueDate">Fecha compromiso</label>
+            <input type="date" id="planDueDate" />
+          </div>
+
+          <div class="btn-stack">
+            <button type="button" class="btn btn-secondary" onclick="saveActionPlan(true)">+ Agregar otro hallazgo</button>
+            <button type="button" class="btn btn-primary" onclick="saveActionPlan(false)">Guardar y continuar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 3: DASHBOARD ADMIN & GESTIÓN (Foto 4) -->
+    <section id="screen-dashboard" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <span class="header-title">Inspecciones Ambientales</span>
+        </div>
+        <div class="header-right" id="headerRightDash"></div>
+      </header>
+
+      <div class="content-pad">
+        <div class="card-dark">
+          <div class="dash-banner-title">Dashboard • Estadísticas y Gestión</div>
+          <div class="dash-banner-sub" id="dashModeBanner">
+            <span>●</span>
+            <span id="dashModeText">Modo Administrador Activo</span>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card">
+          <h3 style="font-size:13.5px;font-weight:800;color:var(--green-dark);margin-bottom:8px;">Filtros</h3>
+          <div class="filter-grid">
+            <div>
+              <label for="fltDivision">División</label>
+              <select id="fltDivision" onchange="populateFilterAreas()"></select>
+            </div>
+            <div>
+              <label for="fltArea">Área</label>
+              <select id="fltArea"></select>
+            </div>
+            <div>
+              <label for="fltResponsable">Responsable</label>
+              <select id="fltResponsable"></select>
+            </div>
+            <div>
+              <label for="fltInspector">Inspector</label>
+              <select id="fltInspector"></select>
+            </div>
+            <div>
+              <label for="fltDateFrom">Desde</label>
+              <input type="date" id="fltDateFrom" />
+            </div>
+            <div>
+              <label for="fltDateTo">Hasta</label>
+              <input type="date" id="fltDateTo" />
+            </div>
+            <div class="filter-full" style="display:flex;gap:8px;margin-top:4px;">
+              <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="applyDashboardFilters()">Aplicar Filtros</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetDashboardFilters()">Limpiar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-two-col">
+          <div class="card">
+            <h3 style="font-size:12.5px;font-weight:800;color:var(--green-dark);">Puntaje por División</h3>
+            <div id="divisionBarsChart" class="bar-chart"></div>
+          </div>
+
+          <div class="card donut-wrap">
+            <h3 style="font-size:12.5px;font-weight:800;color:var(--green-dark);margin-bottom:6px;align-self:flex-start;">Distribución</h3>
+            <div id="donutRing" class="donut-ring">
+              <div class="donut-hole">
+                <span id="donutAvgScore" class="donut-num">74</span>
+                <span class="donut-txt">Puntaje</span>
+              </div>
+            </div>
+            <div id="donutLegend" class="legend-list"></div>
+          </div>
+        </div>
+
+        <!-- Lista Inspecciones -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h3 id="inspectionsListTitle" style="font-size:13.5px;font-weight:800;color:var(--green-dark);">Inspecciones</h3>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="startNewInspection()">+ Nueva</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="exportDashboardPDF()">📄 Exportar PDF</button>
+            </div>
+          </div>
+          <div id="inspectionsListContainer"></div>
+        </div>
+
+        <!-- Panel de Administrador (Solo visible si isAdmin) -->
+        <div id="adminManagementPanel" class="card-dark" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="font-size:14px;font-weight:800;">Panel Administrador</h3>
+            <span class="badge-admin">CONFIGURACIÓN</span>
+          </div>
+          <p style="font-size:11.5px;opacity:0.88;margin-top:3px;">
+            Agrega o edita opciones sin tocar código. Los cambios actualizan responsable y correo por área al instante.
+          </p>
+
+          <div class="admin-grid-btns">
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('divisions')">🏢 Gestionar Divisiones</button>
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('areas')">📍 Gestionar Áreas</button>
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('responsibles')">👤 Gestionar Responsables</button>
+            <button type="button" class="admin-pill-btn" onclick="openAdminManager('inspectors')">🦺 Gestionar Inspectores</button>
+          </div>
+
+          <div id="adminManagerWorkspace" class="admin-editor-box" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA PERFIL -->
+    <section id="screen-profile" class="screen">
+      <header class="top-header">
+        <div class="header-left">
+          <span class="header-title">Perfil de Sesión</span>
+        </div>
+        <div class="header-right" id="headerRightProfile"></div>
+      </header>
+
+      <div class="content-pad">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="avatar-circle" id="profileAvatar" style="width:48px;height:48px;font-size:16px;background:var(--green-dark);color:var(--white);">US</div>
+            <div>
+              <div id="profileEmailDisplay" style="font-size:14px;font-weight:800;color:var(--green-dark);">usuario@empresa.com</div>
+              <div id="profileRoleDisplay" style="font-size:12px;color:var(--text-muted);margin-top:2px;">Rol: Usuario</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+            <button type="button" class="btn btn-primary" onclick="startNewInspection()">+ Iniciar Nueva Inspección</button>
+            <button type="button" class="btn btn-outline" onclick="exportDashboardPDF()">📄 Exportar Reporte PDF</button>
+            <button type="button" class="btn btn-danger-soft" onclick="logoutSession()">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM NAVIGATION (5 pestañas) -->
+    <nav id="bottomNav" class="bottom-nav hidden" aria-label="Navegación principal">
+      <button type="button" class="nav-item" data-nav="inicio" onclick="onBottomNav('inicio')">
+        <span class="nav-icon">🏠</span>
+        <span>Inicio</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="inspecciones" onclick="onBottomNav('inspecciones')">
+        <span class="nav-icon">📋</span>
+        <span>Inspecciones</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="estadisticas" onclick="onBottomNav('estadisticas')">
+        <span class="nav-icon">📊</span>
+        <span>Estadísticas</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="admin" onclick="onBottomNav('admin')">
+        <span class="nav-icon">⚙</span>
+        <span>Admin</span>
+      </button>
+      <button type="button" class="nav-item" data-nav="perfil" onclick="onBottomNav('perfil')">
+        <span class="nav-icon">👤</span>
+        <span>Perfil</span>
+      </button>
+    </nav>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+
+    <!-- MODAL GENÉRICO -->
+    <div id="appModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+      <div class="modal-card" id="appModalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      SESSION: 'env_insp_session_v1',
+      CATALOG: 'env_insp_catalog_v1',
+      INSPECTIONS: 'env_insp_records_v1',
+      USERS: 'env_insp_users_v1',
+      ADMIN_KEY: 'env_insp_admin_key_v1'
+    };
+
+    const DEFAULT_CATALOG = {
+      divisions: [
+        'Operaciones Mineras',
+        'Acería',
+        'Laminación',
+        'Servicios Generales'
+      ],
+      areasByDivision: {
+        'Operaciones Mineras': ['Planta Norte', 'Almacén Central', 'Zona Norte'],
+        'Acería': ['Horno Eléctrico', 'Colada Continua', 'Ajuste', 'Patio Chatarra'],
+        'Laminación': ['Tren 1', 'Tren 2', 'Horno Recalentamiento'],
+        'Servicios Generales': ['PTAR', 'Almacén', 'Talleres']
+      },
+      areaResponsibles: {
+        'Planta Norte': { name: 'María López', email: 'maria@empresa.com' },
+        'Almacén Central': { name: 'María López', email: 'maria@empresa.com' },
+        'Zona Norte': { name: 'María López', email: 'maria@empresa.com' },
+        'Horno Eléctrico': { name: 'Juan Perez', email: 'juan.perez@empresa.com' },
+        'Colada Continua': { name: 'Ana Gomez', email: 'ana.gomez@empresa.com' },
+        'Ajuste': { name: 'Luis Torres', email: 'luis.torres@empresa.com' },
+        'Patio Chatarra': { name: 'Pedro Diaz', email: 'pedro.diaz@empresa.com' },
+        'Tren 1': { name: 'Maria Lopez', email: 'maria.lopez@empresa.com' },
+        'Tren 2': { name: 'Carlos Ruiz', email: 'carlos.ruiz@empresa.com' },
+        'Horno Recalentamiento': { name: 'Jorge Ramirez', email: 'jorge.ramirez@empresa.com' },
+        'PTAR': { name: 'Laura Mendez', email: 'laura.mendez@empresa.com' },
+        'Almacén': { name: 'Diego Soto', email: 'diego.soto@empresa.com' },
+        'Talleres': { name: 'Andres Paredes', email: 'andres.paredes@empresa.com' }
+      },
+      inspectors: [
+        { name: 'Ana López', email: 'ana.lopez@empresa.com' },
+        { name: 'Carlos Ruiz', email: 'carlos.ruiz@empresa.com' },
+        { name: 'Luis Torres', email: 'luis.torres@empresa.com' }
+      ]
+    };
+
+    const DEFAULT_INSPECTIONS = [
+      {
+        id: 'INS-2024-085',
+        codeNumber: '#1024',
+        division: 'Operaciones Mineras',
+        area: 'Planta Norte',
+        responsibleName: 'María López',
+        responsibleEmail: 'maria@empresa.com',
+        inspectorName: 'Ana López',
+        inspectorEmail: 'ana.lopez@empresa.com',
+        date: '2026-10-18',
+        ownerEmail: 'admin@empresa.com',
+        findings: [
+          {
+            photo: '',
+            description: 'Acopio temporal de estériles cerca de canal perimetral',
+            severity: 'Medio',
+            severityPoints: 1,
+            location: 'Planta Norte - Zona de carga - Área exterior',
+            type: 'Residuos',
+            actionPlan: {
+              whatToDo: 'Reubicar material a zona autorizada y reforzar cuneta perimetral.',
+              responsible: 'Ing Laura Mendez',
+              dueDate: '2026-10-28'
+            }
+          },
+          {
+            photo: '',
+            description: 'Pequeña mancha de aceite en plataforma de cargue',
+            severity: 'Crítico',
+            severityPoints: 2,
+            location: 'Planta Norte - Zona de carga - Área exterior',
+            type: 'Derrame',
+            actionPlan: {
+              whatToDo: 'Aplicar material absorbente, disponer residuos oleosos y revisar mangueras.',
+              responsible: 'Ing Laura Mendez',
+              dueDate: '2026-10-22'
+            }
+          }
+        ]
+      },
+      {
+        id: 'INS-2024-086',
+        codeNumber: '#1025',
+        division: 'Acería',
+        area: 'Horno Eléctrico',
+        responsibleName: 'Juan Perez',
+        responsibleEmail: 'juan.perez@empresa.com',
+        inspectorName: 'Carlos Ruiz',
+        inspectorEmail: 'carlos.ruiz@empresa.com',
+        date: '2026-10-25',
+        ownerEmail: 'inspector@empresa.com',
+        findings: [
+          {
+            photo: '',
+            description: 'Emisión fugitiva en campana de captación secundaria',
+            severity: 'Crítico',
+            severityPoints: 2,
+            location: 'Planta - Zona de proceso - Nave cubierta',
+            type: 'Emisiones',
+            actionPlan: {
+              whatToDo: 'Ajustar tiraje de extractor y programar mantenimiento de mangas.',
+              responsible: 'Ing Laura Mendez',
+              dueDate: '2026-11-05'
+            }
+          }
+        ]
+      }
+    ];
+
+    let state = {
+      session: null,
+      catalog: null,
+      inspections: [],
+      draftInspection: null,
+      tempFinding: null,
+      currentSeverity: { label: 'Leve', points: 0.5 },
+      tempPhotoDataUrl: '',
+      activeAdminTab: null
+    };
+
+    function loadStorage() {
+      if (!localStorage.getItem(STORAGE_KEYS.ADMIN_KEY)) {
+        localStorage.setItem(STORAGE_KEYS.ADMIN_KEY, 'admin123');
+      }
+      if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([
+          { email: 'inspector@empresa.com', password: '123', role: 'Usuario' }
+        ]));
+      }
+
+      const rawCatalog = localStorage.getItem(STORAGE_KEYS.CATALOG);
+      state.catalog = rawCatalog ? JSON.parse(rawCatalog) : structuredClone(DEFAULT_CATALOG);
+      if (!rawCatalog) saveCatalog();
+
+      const rawInsp = localStorage.getItem(STORAGE_KEYS.INSPECTIONS);
+      state.inspections = rawInsp ? JSON.parse(rawInsp) : structuredClone(DEFAULT_INSPECTIONS);
+      if (!rawInsp) saveInspections();
+
+      const rawSession = localStorage.getItem(STORAGE_KEYS.SESSION) || sessionStorage.getItem(STORAGE_KEYS.SESSION);
+      if (rawSession) {
+        state.session = JSON.parse(rawSession);
+      }
+    }
+
+    function saveCatalog() {
+      localStorage.setItem(STORAGE_KEYS.CATALOG, JSON.stringify(state.catalog));
+    }
+
+    function saveInspections() {
+      localStorage.setItem(STORAGE_KEYS.INSPECTIONS, JSON.stringify(state.inspections));
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2600);
+    }
+
+    function togglePasswordVisibility(inputId) {
+      const inp = document.getElementById(inputId);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function setLoginRole(role) {
+      const isAdmin = role === 'Admin';
+      document.getElementById('roleUserBtn').classList.toggle('active', !isAdmin);
+      document.getElementById('roleAdminBtn').classList.toggle('active', isAdmin);
+      document.getElementById('adminKeyGroup').style.display = isAdmin ? 'block' : 'none';
+      document.getElementById('loginAdminBadge').style.display = isAdmin ? 'inline-block' : 'none';
+      if (isAdmin) {
+        document.getElementById('adminSecretKey').required = true;
+      } else {
+        document.getElementById('adminSecretKey').required = false;
+        document.getElementById('adminSecretKey').value = '';
+      }
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+      const isAdminRole = document.getElementById('roleAdminBtn').classList.contains('active');
+      const keepSession = document.getElementById('keepSessionSwitch').checked;
+
+      if (!email || !password) return;
+
+      let role = 'Usuario';
+      if (isAdminRole) {
+        const secretInput = document.getElementById('adminSecretKey').value;
+        const validAdminKey = localStorage.getItem(STORAGE_KEYS.ADMIN_KEY) || 'admin123';
+        if (secretInput !== validAdminKey) {
+          showToast('Clave de administrador incorrecta (prueba: admin123)');
+          return;
+        }
+        role = 'Admin';
+      }
+
+      const sessionObj = {
+        email,
+        role,
+        loginAt: new Date().toISOString()
+      };
+
+      state.session = sessionObj;
+      localStorage.removeItem(STORAGE_KEYS.SESSION);
+      sessionStorage.removeItem(STORAGE_KEYS.SESSION);
+      if (keepSession) {
+        localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(sessionObj));
+      } else {
+        sessionStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(sessionObj));
+      }
+
+      updateHeadersAndNav();
+      showToast(role === 'Admin' ? 'Modo Administrador activado' : 'Sesión iniciada como Usuario');
+      startNewInspection();
+    }
+
+    function logoutSession() {
+      state.session = null;
+      localStorage.removeItem(STORAGE_KEYS.SESSION);
+      sessionStorage.removeItem(STORAGE_KEYS.SESSION);
+      document.getElementById('bottomNav').classList.add('hidden');
+      goToScreen('screen-login');
+      showToast('Sesión cerrada');
+    }
+
+    function openRegisterModal() {
+      openModal(`
+        <div class="modal-title">Crear cuenta de Usuario</div>
+        <form onsubmit="submitRegister(event)">
+          <div class="field-group">
+            <label>Correo electrónico</label>
+            <input type="email" id="regEmail" required placeholder="nuevo@empresa.com" />
+          </div>
+          <div class="field-group">
+            <label>Contraseña</label>
+            <input type="password" id="regPass" required placeholder="Mínimo 4 caracteres" />
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px;">
+            <button type="button" class="btn btn-outline btn-sm" style="flex:1;" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Registrar</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function submitRegister(e) {
+      e.preventDefault();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('regPass').value;
+      const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+      users.push({ email, password: pass, role: 'Usuario' });
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = pass;
+      setLoginRole('Usuario');
+      closeModal();
+      showToast('Cuenta registrada. Ya puedes ingresar.');
+    }
+
+    function openRecoverModal() {
+      openModal(`
+        <div class="modal-title">Recuperar contraseña</div>
+        <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">
+          Ingresa tu correo para generar un enlace local de restablecimiento.
+        </p>
+        <form onsubmit="submitRecover(event)">
+          <div class="field-group">
+            <label>Correo electrónico</label>
+            <input type="email" id="recEmail" required placeholder="correo@empresa.com" />
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px;">
+            <button type="button" class="btn btn-outline btn-sm" style="flex:1;" onclick="closeModal()">Cerrar</button>
+            <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Enviar instrucción</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function submitRecover(e) {
+      e.preventDefault();
+      closeModal();
+      showToast('Instrucción de recuperación enviada (modo local)');
+    }
+
+    function openModal(html) {
+      document.getElementById('appModalContent').innerHTML = html;
+      document.getElementById('appModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('appModal').classList.remove('open');
+    }
+
+    function closeModalOnBackdrop(e) {
+      if (e.target.id === 'appModal') closeModal();
+    }
+
+    function isAdmin() {
+      return state.session && state.session.role === 'Admin';
+    }
+
+    function updateHeadersAndNav() {
+      const admin = isAdmin();
+      const email = state.session ? state.session.email : 'usuario@empresa.com';
+      const badgeHtml = admin
+        ? `<span class="badge-admin">ADMIN</span><span class="avatar-circle">AD</span>`
+        : `<span class="badge-user">USUARIO</span><span class="avatar-circle">${email.slice(0, 2).toUpperCase()}</span>`;
+
+      ['headerRightStep1', 'headerRightStep2', 'headerRightPlan', 'headerRightDash', 'headerRightProfile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = badgeHtml;
+      });
+
+      document.getElementById('dashModeText').textContent = admin
+        ? 'Modo Administrador Activo'
+        : 'Modo Usuario — Tus inspecciones y creación';
+
+      document.getElementById('adminManagementPanel').style.display = admin ? 'block' : 'none';
+      document.getElementById('profileEmailDisplay').textContent = email;
+      document.getElementById('profileRoleDisplay').textContent = `Rol: ${admin ? 'Admin' : 'Usuario'}`;
+      document.getElementById('profileAvatar').textContent = admin ? 'AD' : email.slice(0, 2).toUpperCase();
+
+      const nav = document.getElementById('bottomNav');
+      if (state.session) {
+        nav.classList.remove('hidden');
+      } else {
+        nav.classList.add('hidden');
+      }
+    }
+
+    function goToScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (screenId === 'screen-dashboard') {
+        renderDashboard();
+      } else if (screenId === 'screen-step2') {
+        renderFindingsList();
+      }
+    }
+
+    function onBottomNav(tab) {
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.nav === tab);
+      });
+
+      if (tab === 'inicio') {
+        goToScreen('screen-step1');
+      } else if (tab === 'inspecciones') {
+        goToScreen('screen-dashboard');
+        document.getElementById('inspectionsListContainer').scrollIntoView({ behavior: 'smooth' });
+      } else if (tab === 'estadisticas') {
+        goToScreen('screen-dashboard');
+        document.getElementById('divisionBarsChart').scrollIntoView({ behavior: 'smooth' });
+      } else if (tab === 'admin') {
+        if (!isAdmin()) {
+          showToast('Acceso restringido: inicia sesión como Admin');
+          return;
+        }
+        goToScreen('screen-dashboard');
+        document.getElementById('adminManagementPanel').scrollIntoView({ behavior: 'smooth' });
+      } else if (tab === 'perfil') {
+        goToScreen('screen-profile');
+      }
+    }
+
+    /* Paso 1: Información General */
+    function generateNextInspectionId() {
+      const baseNum = 87;
+      const extra = Math.max(0, state.inspections.length - DEFAULT_INSPECTIONS.length);
+      const num = String(baseNum + extra).padStart(3, '0');
+      return `INS-2024-${num}`;
+    }
+
+    function startNewInspection(existingInsp = null) {
+      if (!state.session) {
+        goToScreen('screen-login');
+        return;
+      }
+
+      if (existingInsp) {
+        state.draftInspection = structuredClone(existingInsp);
+      } else {
+        const todayStr = new Date().toISOString().split('T')[0];
+        state.draftInspection = {
+          id: generateNextInspectionId(),
+          codeNumber: `#${1024 + state.inspections.length}`,
+          division: state.catalog.divisions[0] || 'Operaciones Mineras',
+          area: '',
+          responsibleName: '',
+          responsibleEmail: '',
+          inspectorName: state.catalog.inspectors[0]?.name || 'Ana López',
+          inspectorEmail: state.catalog.inspectors[0]?.email || 'ana.lopez@empresa.com',
+          date: todayStr,
+          ownerEmail: state.session.email,
+          findings: []
+        };
+      }
+
+      populateStep1Form();
+      goToScreen('screen-step1');
+    }
+
+    function populateStep1Form() {
+      const divSel = document.getElementById('selDivision');
+      divSel.innerHTML = '';
+      state.catalog.divisions.forEach(div => {
+        const opt = document.createElement('option');
+        opt.value = div;
+        opt.textContent = div;
+        divSel.appendChild(opt);
+      });
+
+      divSel.value = state.draftInspection.division || state.catalog.divisions[0];
+      populateAreasForDivision(divSel.value, state.draftInspection.area);
+
+      const inspSel = document.getElementById('selInspector');
+      inspSel.innerHTML = '';
+      state.catalog.inspectors.forEach(ins => {
+        const opt = document.createElement('option');
+        opt.value = ins.name;
+        opt.textContent = ins.name;
+        inspSel.appendChild(opt);
+      });
+      inspSel.value = state.draftInspection.inspectorName || (state.catalog.inspectors[0]?.name || '');
+      onInspectorChange();
+
+      document.getElementById('autoInspectionId').textContent = state.draftInspection.id;
+      document.getElementById('inpFecha').value = state.draftInspection.date || new Date().toISOString().split('T')[0];
+    }
+
+    function populateAreasForDivision(divisionName, preferredArea = '') {
+      const areaSel = document.getElementById('selArea');
+      const areas = state.catalog.areasByDivision[divisionName] || [];
+      areaSel.innerHTML = '';
+      areas.forEach(area => {
+        const opt = document.createElement('option');
+        opt.value = area;
+        opt.textContent = area;
+        areaSel.appendChild(opt);
+      });
+
+      if (preferredArea && areas.includes(preferredArea)) {
+        areaSel.value = preferredArea;
+      } else if (areas.length > 0) {
+        areaSel.value = areas[0];
+      }
+      updateAutoResponsibleByArea(areaSel.value);
+    }
+
+    function onDivisionChange() {
+      const divVal = document.getElementById('selDivision').value;
+      populateAreasForDivision(divVal);
+    }
+
+    function onAreaChange() {
+      const areaVal = document.getElementById('selArea').value;
+      updateAutoResponsibleByArea(areaVal);
+    }
+
+    function getResponsibleForArea(areaName) {
+      const map = state.catalog.areaResponsibles || {};
+      if (map[areaName] && map[areaName].name) {
+        return {
+          name: map[areaName].name,
+          email: map[areaName].email || 'responsable@empresa.com'
+        };
+      }
+      const firstKey = Object.keys(map)[0];
+      if (firstKey && map[firstKey]) {
+        return {
+          name: map[firstKey].name,
+          email: map[firstKey].email || 'responsable@empresa.com'
+        };
+      }
+      return { name: 'María López', email: 'maria@empresa.com' };
+    }
+
+    function updateAutoResponsibleByArea(areaName) {
+      const resp = getResponsibleForArea(areaName);
+      document.getElementById('autoRespName').textContent = resp.name;
+      document.getElementById('autoRespEmail').textContent = resp.email;
+      if (state.draftInspection) {
+        state.draftInspection.responsibleName = resp.name;
+        state.draftInspection.responsibleEmail = resp.email;
+      }
+    }
+
+    function onInspectorChange() {
+      const chosenName = document.getElementById('selInspector').value;
+      const found = state.catalog.inspectors.find(i => i.name === chosenName) || state.catalog.inspectors[0];
+      const email = found ? found.email : 'inspector@empresa.com';
+      document.getElementById('autoInspectorEmail').textContent = email;
+      if (state.draftInspection) {
+        state.draftInspection.inspectorName = chosenName;
+        state.draftInspection.inspectorEmail = email;
+      }
+    }
+
+    function continueToStep2() {
+      if (!state.draftInspection) startNewInspection();
+      const divVal = document.getElementById('selDivision').value;
+      const areaVal = document.getElementById('selArea').value;
+      const resp = getResponsibleForArea(areaVal);
+      const inspName = document.getElementById('selInspector').value;
+      const foundInsp = state.catalog.inspectors.find(i => i.name === inspName) || state.catalog.inspectors[0];
+
+      state.draftInspection.division = divVal;
+      state.draftInspection.area = areaVal;
+      state.draftInspection.responsibleName = resp.name;
+      state.draftInspection.responsibleEmail = resp.email;
+      state.draftInspection.inspectorName = inspName;
+      state.draftInspection.inspectorEmail = foundInsp ? foundInsp.email : 'inspector@empresa.com';
+      state.draftInspection.date = document.getElementById('inpFecha').value || new Date().toISOString().split('T')[0];
+
+      resetFindingForm();
+      goToScreen('screen-step2');
+    }
+
+    /* Paso 2: Hallazgos */
+    function handleFindingPhoto(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        state.tempPhotoDataUrl = e.target.result;
+        document.getElementById('findingPhotoPreview').innerHTML = `<img src="${state.tempPhotoDataUrl}" alt="Vista previa" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function selectSeverity(label, points) {
+      state.currentSeverity = { label, points };
+      document.querySelectorAll('#severityPills .pill-btn').forEach(btn => {
+        const active = btn.dataset.sev === label;
+        btn.classList.toggle('active', active);
+      });
+    }
+
+    function updateCascadeLocations(level) {
+      const l1 = document.getElementById('locLevel1').value;
+      const l2 = document.getElementById('locLevel2');
+      if (level === 'level1' && l1 === 'Planta Norte') {
+        l2.value = 'Zona de carga';
+      }
+    }
+
+    function resetFindingForm() {
+      state.tempPhotoDataUrl = '';
+      document.getElementById('findingPhotoInput').value = '';
+      document.getElementById('findingPhotoPreview').innerHTML = 'Sin foto';
+      document.getElementById('findingDesc').value = '';
+      selectSeverity('Leve', 0.5);
+      document.getElementById('findingType').value = 'Residuos';
+      renderFindingsList();
+    }
+
+    function renderFindingsList() {
+      const list = state.draftInspection ? state.draftInspection.findings : [];
+      document.getElementById('findingsCountTitle').textContent = `Hallazgos registrados (${list.length})`;
+      const container = document.getElementById('registeredFindingsList');
+      if (!list.length) {
+        container.innerHTML = `<p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Aún no hay hallazgos registrados en esta inspección.</p>`;
+        return;
+      }
+
+      container.innerHTML = list.map((f, idx) => {
+        const thumb = f.photo || createPlaceholderDataUrl(f.type);
+        return `
+          <div class="finding-item">
+            <img src="${thumb}" class="finding-thumb" alt="Miniatura" />
+            <div class="finding-meta">
+              <div class="finding-desc">#${idx + 1} · ${escapeHtml(f.description)}</div>
+              <div class="finding-sub">Severidad: <strong>${f.severity} (${f.severityPoints})</strong> · ${escapeHtml(f.location)} · ${escapeHtml(f.type)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function createPlaceholderDataUrl(labelText = 'Hallazgo') {
+      const canvas = document.createElement('canvas');
+      canvas.width = 160;
+      canvas.height = 110;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#E3EDE6';
+      ctx.fillRect(0, 0, 160, 110);
+      ctx.fillStyle = '#123F22';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(labelText, 80, 60);
+      return canvas.toDataURL('image/png');
+    }
+
+    function prepareActionPlanFromFinding() {
+      const desc = document.getElementById('findingDesc').value.trim();
+      if (!desc) {
+        showToast('Escribe una descripción del hallazgo');
+        return;
+      }
+
+      const loc = [
+        document.getElementById('locLevel1').value,
+        document.getElementById('locLevel2').value,
+        document.getElementById('locLevel3').value
+      ].join(' - ');
+
+      const type = document.getElementById('findingType').value;
+      const photo = state.tempPhotoDataUrl || createPlaceholderDataUrl(type);
+
+      state.tempFinding = {
+        photo,
+        description: desc,
+        severity: state.currentSeverity.label,
+        severityPoints: state.currentSeverity.points,
+        location: loc,
+        type
+      };
+
+      document.getElementById('planPreviewPhoto').src = photo;
+      document.getElementById('planSummaryDesc').textContent = desc;
+      document.getElementById('planSummarySeverity').textContent = `${state.tempFinding.severity} (${state.tempFinding.severityPoints})`;
+      document.getElementById('planSummaryLocation').textContent = loc;
+      document.getElementById('planSummaryType').textContent = type;
+
+      document.getElementById('planWhatToDo').value = '';
+      document.getElementById('planResponsible').value = 'Ing Laura Mendez';
+      const due = new Date();
+      due.setDate(due.getDate() + 7);
+      document.getElementById('planDueDate').value = due.toISOString().split('T')[0];
+
+      goToScreen('screen-action-plan');
+    }
+
+    /* Paso 2.5: Plan de Acción */
+    function saveActionPlan(addAnother) {
+      if (!state.tempFinding) return;
+      const whatToDo = document.getElementById('planWhatToDo').value.trim() || 'Ejecutar control preventivo y verificación en campo.';
+      const responsible = document.getElementById('planResponsible').value.trim() || 'Ing Laura Mendez';
+      const dueDate = document.getElementById('planDueDate').value || new Date().toISOString().split('T')[0];
+
+      state.draftInspection.findings.push({
+        ...state.tempFinding,
+        actionPlan: {
+          whatToDo,
+          responsible,
+          dueDate
+        }
+      });
+
+      state.tempFinding = null;
+      persistDraftInspection();
+
+      if (addAnother) {
+        showToast('Hallazgo y plan guardados. Agrega otro hallazgo.');
+        resetFindingForm();
+        goToScreen('screen-step2');
+      } else {
+        showToast('Inspección guardada en el sistema');
+        goToScreen('screen-dashboard');
+      }
+    }
+
+    function persistDraftInspection() {
+      if (!state.draftInspection) return;
+      const idx = state.inspections.findIndex(item => item.id === state.draftInspection.id);
+      if (idx >= 0) {
+        state.inspections[idx] = structuredClone(state.draftInspection);
+      } else {
+        state.inspections.unshift(structuredClone(state.draftInspection));
+      }
+      saveInspections();
+    }
+
+    /* Puntajes y Dashboard (Foto 4) */
+    function calculateInspectionScore(insp) {
+      const sumSeverities = (insp.findings || []).reduce((acc, f) => acc + Number(f.severityPoints || 0), 0);
+      const rawScore = 100 - sumSeverities;
+      return Math.max(0, Math.min(100, Number(rawScore.toFixed(1))));
+    }
+
+    function getScoreCategory(score) {
+      if (score >= 80) return { label: 'Excelente', cssClass: 'score-exc', color: '#1B7A3E' };
+      if (score >= 60) return { label: 'Aceptable', cssClass: 'score-acc', color: '#C98A00' };
+      return { label: 'Deficiente', cssClass: 'score-def', color: '#C62828' };
+    }
+
+    function getVisibleInspections() {
+      if (!state.session) return [];
+      if (isAdmin()) return state.inspections;
+      return state.inspections.filter(i => i.ownerEmail === state.session.email);
+    }
+
+    function populateFilterSelects() {
+      const visible = getVisibleInspections();
+      const divSel = document.getElementById('fltDivision');
+      const areaSel = document.getElementById('fltArea');
+      const respSel = document.getElementById('fltResponsable');
+      const inspSel = document.getElementById('fltInspector');
+
+      const curDiv = divSel.value;
+      const curResp = respSel.value;
+      const curInsp = inspSel.value;
+
+      const divisions = ['Todas', ...new Set([...state.catalog.divisions, ...visible.map(i => i.division)])];
+      divSel.innerHTML = divisions.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+      if (divisions.includes(curDiv)) divSel.value = curDiv;
+
+      populateFilterAreas();
+
+      const responsibles = ['Todos', ...new Set(visible.map(i => i.responsibleName))];
+      respSel.innerHTML = responsibles.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+      if (responsibles.includes(curResp)) respSel.value = curResp;
+
+      const inspectors = ['Todos', ...new Set(visible.map(i => i.inspectorName))];
+      inspSel.innerHTML = inspectors.map(x => `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
+      if (inspectors.includes(curInsp)) inspSel.value = curInsp;
+    }
+
+    function populateFilterAreas() {
+      const selectedDiv = document.getElementById('fltDivision').value;
+      const areaSel = document.getElementById('fltArea');
+      const curArea = areaSel.value;
+
+      let areas = [];
+      if (!selectedDiv || selectedDiv === 'Todas') {
+        areas = Object.values(state.catalog.areasByDivision).flat();
+      } else {
+        areas = state.catalog.areasByDivision[selectedDiv] || [];
+      }
+
+      const uniqueAreas = ['Todas', ...new Set(areas)];
+      areaSel.innerHTML = uniqueAreas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+      if (uniqueAreas.includes(curArea)) areaSel.value = curArea;
+    }
+
+    function getFilteredInspections() {
+      const base = getVisibleInspections();
+      const fDiv = document.getElementById('fltDivision').value;
+      const fArea = document.getElementById('fltArea').value;
+      const fResp = document.getElementById('fltResponsable').value;
+      const fInsp = document.getElementById('fltInspector').value;
+      const fFrom = document.getElementById('fltDateFrom').value;
+      const fTo = document.getElementById('fltDateTo').value;
+
+      return base.filter(item => {
+        if (fDiv && fDiv !== 'Todas' && item.division !== fDiv) return false;
+        if (fArea && fArea !== 'Todas' && item.area !== fArea) return false;
+        if (fResp && fResp !== 'Todos' && item.responsibleName !== fResp) return false;
+        if (fInsp && fInsp !== 'Todos' && item.inspectorName !== fInsp) return false;
+        if (fFrom && item.date < fFrom) return false;
+        if (fTo && item.date > fTo) return false;
+        return true;
+      });
+    }
+
+    function applyDashboardFilters() {
+      renderDashboard(true);
+      showToast('Filtros aplicados');
+    }
+
+    function resetDashboardFilters() {
+      document.getElementById('fltDivision').value = 'Todas';
+      populateFilterAreas();
+      document.getElementById('fltArea').value = 'Todas';
+      document.getElementById('fltResponsable').value = 'Todos';
+      document.getElementById('fltInspector').value = 'Todos';
+      document.getElementById('fltDateFrom').value = '';
+      document.getElementById('fltDateTo').value = '';
+      renderDashboard(true);
+      showToast('Filtros limpiados');
+    }
+
+    function renderDashboard(keepFilters = false) {
+      if (!keepFilters) populateFilterSelects();
+      const items = getFilteredInspections();
+
+      renderDivisionBars(items);
+      renderDonutChart(items);
+      renderInspectionsList(items);
+
+      if (isAdmin() && state.activeAdminTab) {
+        renderAdminWorkspace(state.activeAdminTab);
+      }
+    }
+
+    function renderDivisionBars(items) {
+      const container = document.getElementById('divisionBarsChart');
+      const divsToShow = state.catalog.divisions.slice(0, 4);
+
+      if (!divsToShow.length) {
+        container.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">Sin divisiones</span>`;
+        return;
+      }
+
+      container.innerHTML = divsToShow.map(divName => {
+        const matching = items.filter(i => i.division === divName);
+        const avg = matching.length
+          ? Math.round(matching.reduce((s, x) => s + calculateInspectionScore(x), 0) / matching.length)
+          : 0;
+        const heightPct = Math.max(8, avg);
+        return `
+          <div class="bar-col">
+            <span class="bar-val">${avg}</span>
+            <div class="bar-fill" style="height:${heightPct}%;"></div>
+            <span class="bar-lbl" title="${escapeHtml(divName)}">${escapeHtml(divName)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDonutChart(items) {
+      const total = items.length;
+      let excCount = 0;
+      let accCount = 0;
+      let defCount = 0;
+      let sumScores = 0;
+
+      items.forEach(item => {
+        const sc = calculateInspectionScore(item);
+        sumScores += sc;
+        if (sc >= 80) excCount++;
+        else if (sc >= 60) accCount++;
+        else defCount++;
+      });
+
+      const avgScore = total ? Math.round(sumScores / total) : 0;
+      const excPct = total ? Math.round((excCount / total) * 100) : 0;
+      const accPct = total ? Math.round((accCount / total) * 100) : 0;
+      const defPct = total ? Math.max(0, 100 - excPct - accPct) : 0;
+
+      document.getElementById('donutAvgScore').textContent = avgScore;
+
+      const degExc = (excPct / 100) * 360;
+      const degAcc = degExc + (accPct / 100) * 360;
+
+      const ring = document.getElementById('donutRing');
+      if (!total) {
+        ring.style.background = '#DCE5DF';
+      } else {
+        ring.style.background = `conic-gradient(#1B7A3E 0deg ${degExc}deg, #C98A00 ${degExc}deg ${degAcc}deg, #C62828 ${degAcc}deg 360deg)`;
+      }
+
+      document.getElementById('donutLegend').innerHTML = `
+        <div class="legend-item"><span class="dot" style="background:#1B7A3E;"></span>Excelente ${excPct}%</div>
+        <div class="legend-item"><span class="dot" style="background:#C98A00;"></span>Aceptable ${accPct}%</div>
+        <div class="legend-item"><span class="dot" style="background:#C62828;"></span>Deficiente ${defPct}%</div>
+      `;
+    }
+
+    function renderInspectionsList(items) {
+      const admin = isAdmin();
+      document.getElementById('inspectionsListTitle').textContent = admin
+        ? `Inspecciones (${items.length})`
+        : `Mis Inspecciones (${items.length})`;
+
+      const container = document.getElementById('inspectionsListContainer');
+      if (!items.length) {
+        container.innerHTML = `<p style="font-size:12.5px;color:var(--text-muted);margin-top:10px;">No hay inspecciones que coincidan con los filtros.</p>`;
+        return;
+      }
+
+      container.innerHTML = items.map(insp => {
+        const score = calculateInspectionScore(insp);
+        const cat = getScoreCategory(score);
+        const adminButtons = admin ? `
+          <div class="insp-actions">
+            <button type="button" class="btn btn-edit-soft btn-sm" onclick="editInspectionById('${insp.id}')">Editar</button>
+            <button type="button" class="btn btn-danger-soft btn-sm" onclick="deleteInspectionById('${insp.id}')">Eliminar</button>
+          </div>
+        ` : '';
+
+        return `
+          <div class="insp-card">
+            <div class="insp-top">
+              <div class="insp-id">${escapeHtml(insp.codeNumber || insp.id)} • ${escapeHtml(insp.area)}</div>
+              <span class="score-badge ${cat.cssClass}">Puntaje ${score}/100 · ${cat.label}</span>
+            </div>
+            <div class="insp-details">
+              <div><strong>División:</strong> ${escapeHtml(insp.division)} · <strong>Fecha:</strong> ${escapeHtml(insp.date)}</div>
+              <div><strong>Inspector:</strong> ${escapeHtml(insp.inspectorName)} (${escapeHtml(insp.inspectorEmail)})</div>
+              <div><strong>Responsable:</strong> ${escapeHtml(insp.responsibleName)} (${escapeHtml(insp.responsibleEmail)})</div>
+              <div><strong>Hallazgos:</strong> ${(insp.findings || []).length}</div>
+            </div>
+            ${adminButtons}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function editInspectionById(id) {
+      if (!isAdmin()) return;
+      const target = state.inspections.find(i => i.id === id);
+      if (!target) return;
+      startNewInspection(target);
+    }
+
+    function deleteInspectionById(id) {
+      if (!isAdmin()) return;
+      state.inspections = state.inspections.filter(i => i.id !== id);
+      saveInspections();
+      renderDashboard(true);
+      showToast(`Inspección ${id} eliminada`);
+    }
+
+    /* Panel Administrador: Gestionar Divisiones, Áreas, Responsables, Inspectores */
+    function openAdminManager(tab) {
+      if (!isAdmin()) return;
+      state.activeAdminTab = tab;
+      const box = document.getElementById('adminManagerWorkspace');
+      box.style.display = 'block';
+      renderAdminWorkspace(tab);
+    }
+
+    function renderAdminWorkspace(tab) {
+      const box = document.getElementById('adminManagerWorkspace');
+
+      if (tab === 'divisions') {
+        box.innerHTML = `
+          <h4 style="font-size:13px;font-weight:800;color:var(--green-dark);margin-bottom:8px;">Gestionar Divisiones</h4>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <input type="text" id="newDivisionInput" placeholder="Nombre nueva división..." />
+            <button type="button" class="btn btn-primary btn-sm" onclick="addDivision()">Agregar</button>
+          </div>
+          ${state.catalog.divisions.map((d, idx) => `
+            <div class="list-chip-row">
+              <span>${escapeHtml(d)}</span>
+              <button type="button" class="btn btn-edit-soft btn-sm" onclick="editDivision(${idx})">Editar</button>
+            </div>
+          `).join('')}
+        `;
+      } else if (tab === 'areas') {
+        const divOptions = state.catalog.divisions.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+        const allAreaEntries = [];
+        Object.entries(state.catalog.areasByDivision).forEach(([divName, areaArr]) => {
+          areaArr.forEach(aName => allAreaEntries.push({ divName, aName }));
+        });
+
+        box.innerHTML = `
+          <h4 style="font-size:13px;font-weight:800;color:var(--green-dark);margin-bottom:8px;">Gestionar Áreas</h4>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">
+            <select id="areaTargetDivision">${divOptions}</select>
+            <div style="display:flex;gap:6px;">
+              <input type="text" id="newAreaInput" placeholder="Nombre del área..." />
+              <button type="button" class="btn btn-primary btn-sm" onclick="addArea()">Agregar</button>
+            </div>
+          </div>
+          ${allAreaEntries.map(entry => `
+            <div class="list-chip-row">
+              <span><strong>${escapeHtml(entry.aName)}</strong> <span style="color:var(--text-muted);">(${escapeHtml(entry.divName)})</span></span>
+              <button type="button" class="btn btn-edit-soft btn-sm" onclick="editArea('${escapeJs(entry.divName)}', '${escapeJs(entry.aName)}')">Editar</button>
+            </div>
+          `).join('')}
+        `;
+      } else if (tab === 'responsibles') {
+        const allAreas = [...new Set(Object.values(state.catalog.areasByDivision).flat())];
+        const areaOpts = allAreas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+
+        box.innerHTML = `
+          <h4 style="font-size:13px;font-weight:800;color:var(--green-dark);margin-bottom:8px;">Gestionar Responsables por Área</h4>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+            <select id="respAreaSelect">${areaOpts}</select>
+            <input type="text" id="respNameInput" placeholder="Nombre responsable (ej. Ing. Laura Méndez)" />
+            <input type="email" id="respEmailInput" placeholder="correo@empresa.com" />
+            <button type="button" class="btn btn-primary btn-sm" onclick="saveResponsibleMapping()">Guardar Responsable</button>
+          </div>
+          ${allAreas.map(a => {
+            const r = getResponsibleForArea(a);
+            return `
+              <div class="list-chip-row">
+                <div>
+                  <div><strong>${escapeHtml(a)}</strong></div>
+                  <div style="color:var(--text-muted);">${escapeHtml(r.name)} · ${escapeHtml(r.email)}</div>
+                </div>
+                <button type="button" class="btn btn-edit-soft btn-sm" onclick="prefillResponsibleForm('${escapeJs(a)}')">Editar</button>
+              </div>
+            `;
+          }).join('')}
+        `;
+      } else if (tab === 'inspectors') {
+        box.innerHTML = `
+          <h4 style="font-size:13px;font-weight:800;color:var(--green-dark);margin-bottom:8px;">Gestionar Inspectores</h4>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+            <input type="text" id="inspNameInput" placeholder="Nombre del inspector" />
+            <input type="email" id="inspEmailInput" placeholder="correo.inspector@empresa.com" />
+            <button type="button" class="btn btn-primary btn-sm" onclick="addInspector()">Agregar Inspector</button>
+          </div>
+          ${state.catalog.inspectors.map((ins, idx) => `
+            <div class="list-chip-row">
+              <div>
+                <div><strong>${escapeHtml(ins.name)}</strong></div>
+                <div style="color:var(--text-muted);">${escapeHtml(ins.email)}</div>
+              </div>
+              <button type="button" class="btn btn-edit-soft btn-sm" onclick="editInspector(${idx})">Editar</button>
+            </div>
+          `).join('')}
+        `;
+      }
+    }
+
+    function addDivision() {
+      const val = document.getElementById('newDivisionInput').value.trim();
+      if (!val) return;
+      if (!state.catalog.divisions.includes(val)) {
+        state.catalog.divisions.push(val);
+        state.catalog.areasByDivision[val] = ['Área General'];
+        state.catalog.areaResponsibles['Área General'] = { name: 'María López', email: 'maria@empresa.com' };
+        saveCatalog();
+        populateStep1Form();
+        renderDashboard();
+        renderAdminWorkspace('divisions');
+        showToast('División agregada');
+      }
+    }
+
+    function editDivision(idx) {
+      const oldName = state.catalog.divisions[idx];
+      const nextName = prompt('Nuevo nombre de división:', oldName);
+      if (!nextName || !nextName.trim()) return;
+      const clean = nextName.trim();
+      state.catalog.divisions[idx] = clean;
+      state.catalog.areasByDivision[clean] = state.catalog.areasByDivision[oldName] || [];
+      if (oldName !== clean) delete state.catalog.areasByDivision[oldName];
+      state.inspections.forEach(insp => {
+        if (insp.division === oldName) insp.division = clean;
+      });
+      saveCatalog();
+      saveInspections();
+      populateStep1Form();
+      renderDashboard();
+      renderAdminWorkspace('divisions');
+      showToast('División actualizada');
+    }
+
+    function addArea() {
+      const divName = document.getElementById('areaTargetDivision').value;
+      const areaName = document.getElementById('newAreaInput').value.trim();
+      if (!divName || !areaName) return;
+      if (!state.catalog.areasByDivision[divName]) state.catalog.areasByDivision[divName] = [];
+      if (!state.catalog.areasByDivision[divName].includes(areaName)) {
+        state.catalog.areasByDivision[divName].push(areaName);
+      }
+      if (!state.catalog.areaResponsibles[areaName]) {
+        state.catalog.areaResponsibles[areaName] = { name: 'María López', email: 'maria@empresa.com' };
+      }
+      saveCatalog();
+      populateStep1Form();
+      renderDashboard();
+      renderAdminWorkspace('areas');
+      showToast('Área agregada');
+    }
+
+    function editArea(divName, oldAreaName) {
+      const nextArea = prompt('Nuevo nombre de área:', oldAreaName);
+      if (!nextArea || !nextArea.trim()) return;
+      const cleanArea = nextArea.trim();
+      const arr = state.catalog.areasByDivision[divName] || [];
+      const pos = arr.indexOf(oldAreaName);
+      if (pos >= 0) arr[pos] = cleanArea;
+
+      if (state.catalog.areaResponsibles[oldAreaName] && oldAreaName !== cleanArea) {
+        state.catalog.areaResponsibles[cleanArea] = state.catalog.areaResponsibles[oldAreaName];
+        delete state.catalog.areaResponsibles[oldAreaName];
+      }
+      state.inspections.forEach(insp => {
+        if (insp.area === oldAreaName) insp.area = cleanArea;
+      });
+      saveCatalog();
+      saveInspections();
+      populateStep1Form();
+      renderDashboard();
+      renderAdminWorkspace('areas');
+      showToast('Área actualizada');
+    }
+
+    function prefillResponsibleForm(areaName) {
+      const r = getResponsibleForArea(areaName);
+      document.getElementById('respAreaSelect').value = areaName;
+      document.getElementById('respNameInput').value = r.name;
+      document.getElementById('respEmailInput').value = r.email;
+    }
+
+    function saveResponsibleMapping() {
+      const areaName = document.getElementById('respAreaSelect').value;
+      const name = document.getElementById('respNameInput').value.trim();
+      const email = document.getElementById('respEmailInput').value.trim();
+      if (!areaName || !name || !email) {
+        showToast('Completa área, responsable y correo');
+        return;
+      }
+      state.catalog.areaResponsibles[areaName] = { name, email };
+      state.inspections.forEach(insp => {
+        if (insp.area === areaName) {
+          insp.responsibleName = name;
+          insp.responsibleEmail = email;
+        }
+      });
+      saveCatalog();
+      saveInspections();
+      populateStep1Form();
+      renderDashboard();
+      renderAdminWorkspace('responsibles');
+      showToast('Responsable y correo actualizados automáticamente');
+    }
+
+    function addInspector() {
+      const name = document.getElementById('inspNameInput').value.trim();
+      const email = document.getElementById('inspEmailInput').value.trim();
+      if (!name || !email) return;
+      state.catalog.inspectors.push({ name, email });
+      saveCatalog();
+      populateStep1Form();
+      renderAdminWorkspace('inspectors');
+      showToast('Inspector agregado');
+    }
+
+    function editInspector(idx) {
+      const cur = state.catalog.inspectors[idx];
+      const nextName = prompt('Nombre del inspector:', cur.name);
+      if (!nextName || !nextName.trim()) return;
+      const nextEmail = prompt('Correo del inspector:', cur.email) || cur.email;
+      state.catalog.inspectors[idx] = { name: nextName.trim(), email: nextEmail.trim() };
+      saveCatalog();
+      populateStep1Form();
+      renderDashboard();
+      renderAdminWorkspace('inspectors');
+      showToast('Inspector actualizado');
+    }
+
+    /* Exportar a PDF con jsPDF */
+    function exportDashboardPDF() {
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        const items = getFilteredInspections();
+
+        doc.setFillColor(18, 63, 34);
+        doc.rect(0, 0, 595, 68, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.text('Reporte de Inspección Ambiental', 36, 36);
+        doc.setFontSize(10);
+        doc.text(`Generado: ${new Date().toLocaleString('es-CO')} · Total registros: ${items.length}`, 36, 54);
+
+        let y = 92;
+        doc.setTextColor(20, 33, 24);
+
+        items.forEach((insp, idx) => {
+          if (y > 740) {
+            doc.addPage();
+            y = 48;
+          }
+          const score = calculateInspectionScore(insp);
+          const cat = getScoreCategory(score);
+
+          doc.setFontSize(11);
+          doc.setFont(undefined, 'bold');
+          doc.text(`${idx + 1}. ${insp.codeNumber || insp.id} (${insp.id}) - ${insp.area} [${score}/100 · ${cat.label}]`, 36, y);
+          y += 15;
+
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(9.5);
+          doc.text(`División: ${insp.division} | Fecha: ${insp.date}`, 46, y);
+          y += 13;
+          doc.text(`Responsable: ${insp.responsibleName} (${insp.responsibleEmail})`, 46, y);
+          y += 13;
+          doc.text(`Inspector: ${insp.inspectorName} (${insp.inspectorEmail})`, 46, y);
+          y += 13;
+
+          (insp.findings || []).forEach((f, fIdx) => {
+            if (y > 760) {
+              doc.addPage();
+              y = 48;
+            }
+            doc.text(`   - Hallazgo ${fIdx + 1} [${f.severity} ${f.severityPoints} | ${f.type}]: ${f.description}`, 46, y);
+            y += 12;
+            if (f.actionPlan) {
+              doc.text(`     Plan: ${f.actionPlan.whatToDo} | Resp: ${f.actionPlan.responsible} | Vence: ${f.actionPlan.dueDate}`, 46, y);
+              y += 13;
+            }
+          });
+
+          y += 10;
+        });
+
+        doc.save('inspecciones-ambientales.pdf');
+        showToast('PDF descargado correctamente');
+      } catch (err) {
+        console.error(err);
+        showToast('No se pudo generar el PDF');
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function escapeJs(str) {
+      return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStorage();
+      if (state.session) {
+        updateHeadersAndNav();
+        startNewInspection();
+      } else {
+        goToScreen('screen-login');
+      }
+    });
+  </script>
+</body>
+</html>
