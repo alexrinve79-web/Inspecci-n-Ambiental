@@ -1,27 +1,80 @@
-let lat="",lon="",sev="Leve",fotoTmp="",temp=[];
-let DB={plantas:{"Operaciones Mineras":["Zona Norte","Taller Herramientas"],"Tratamiento de Aguas":["Planta Aguas"],"Laminación":["Taller Herramientas","Tren"]},responsables:[{nombre:"María López",correo:"maria@aceria.com",subarea:"Zona Norte"},{nombre:"Carlos Ruiz",correo:"carlos@aceria.com",subarea:"Taller Herramientas"},{nombre:"David Martínez",correo:"david@aceria.com",subarea:"Taller Herramientas"}]};
-if(localStorage.getItem('DBv6'))DB=JSON.parse(localStorage.getItem('DBv6'));
-function saveDB(){localStorage.setItem('DBv6',JSON.stringify(DB))}
-function init(){document.getElementById('fecha').value=new Date().toISOString().split('T')[0];document.getElementById('planta').innerHTML=Object.keys(DB.plantas).map(k=>`<option>${k}</option>`).join('');cargarSub();loadFilters()}
-function cargarSub(){let p=document.getElementById('planta').value;document.getElementById('subarea').innerHTML=DB.plantas[p].map(x=>`<option>${x}</option>`).join('');asignarResp()}
-function asignarResp(){let sub=document.getElementById('subarea').value;let list=DB.responsables.filter(r=>r.subarea===sub);if(!list.length)list=DB.responsables;document.getElementById('responsable').innerHTML=list.map(r=>`<option>${r.nombre}</option>`).join('');asignarCorreo()}
-function asignarCorreo(){let n=document.getElementById('responsable').value;let f=DB.responsables.find(r=>r.nombre===n);document.getElementById('correo').value=f?f.correo:""}
-function loadFilters(){document.getElementById('fDiv').innerHTML='<option value="">Todas</option>'+Object.keys(DB.plantas).map(k=>`<option>${k}</option>`).join('');let areas=[...new Set(Object.values(DB.plantas).flat())];document.getElementById('fArea').innerHTML='<option value="">Todas</option>'+areas.map(a=>`<option>${a}</option>`).join('');document.getElementById('fResp').innerHTML='<option value="">Todos</option>'+DB.responsables.map(r=>`<option>${r.nombre}</option>`).join('')}
-function setSev(v){sev=v;['sLeve','sMedio','sCrit'].forEach(id=>document.getElementById(id).style.background='');document.getElementById(v=='Leve'?'sLeve':v=='Medio'?'sMedio':'sCrit').style.background='#1a4d2e';document.getElementById(v=='Leve'?'sLeve':v=='Medio'?'sMedio':'sCrit').style.color='white'}
-document.getElementById('foto').addEventListener('change',e=>{let r=new FileReader();r.onload=ev=>{fotoTmp=ev.target.result;let im=document.getElementById('preview');im.src=fotoTmp;im.classList.remove('hidden')};if(e.target.files[0])r.readAsDataURL(e.target.files[0])});
-function addHallazgoTemp(){let d=document.getElementById('desc').value;if(!d)return alert('Falta descripción');temp.push({desc:d,sev,tipo:document.getElementById('tipo').value,ubic:document.getElementById('ubic').value,foto:fotoTmp});document.getElementById('desc').value='';fotoTmp='';renderTemp()}
-function renderTemp(){document.getElementById('listaTemp').innerHTML=temp.map((h,i)=>`<div class="border rounded p-2 text-sm"><b>${h.sev} ${h.tipo}</b> ${h.desc} ${h.foto?`<img src="${h.foto}" class="w-full rounded">`:''}</div>`).join('')}
-function showStep(n){[1,2,3].forEach(i=>{document.getElementById('p'+i).classList.toggle('hidden',i!==n);document.getElementById('b'+i).classList.toggle('tab-active',i===n)});if(n==3)renderDash()}
-function getGPS(){navigator.geolocation.getCurrentPosition(p=>{lat=p.coords.latitude;lon=p.coords.longitude;document.getElementById('gpsText').innerText=lat+','+lon},()=>alert('GPS'))}
-function getData(){return JSON.parse(localStorage.getItem('inspV6')||'[]')}
-function saveData(a){localStorage.setItem('inspV6',JSON.stringify(a))}
-function guardarTodo(){if(!temp.length)return alert('Agrega hallazgo');let d={fecha:document.getElementById('fecha').value,planta:document.getElementById('planta').value,subarea:document.getElementById('subarea').value,responsable:document.getElementById('responsable').value,correo:document.getElementById('correo').value,gps:lat+','+lon,hallazgos:temp};let a=getData();a.push(d);saveData(a);temp=[];renderTemp();alert('Guardado');showStep(3)}
-function pdfUno(x){let {jsPDF}=window.jspdf;let doc=new jsPDF();doc.text("INSPECCION AMBIENTAL",10,12);doc.setFontSize(11);doc.text(`Fecha:${x.fecha} ${x.planta} ${x.subarea} ${x.responsable} ${x.correo}`,10,22);let y=30;x.hallazgos.forEach((h,i)=>{doc.text(`H${i+1} ${h.sev} ${h.desc}`,10,y);y+=8;if(h.foto)try{doc.addImage(h.foto,'JPEG',10,y,70,40);y+=45}catch(e){}});doc.save('inspeccion.pdf')}
-function enviarCorreo(x){pdfUno(x);let s=encodeURIComponent(`Inspección ${x.planta} ${x.subarea}`);let b=encodeURIComponent(`Hola ${x.responsable} hallazgos: ${x.hallazgos.map(h=>h.desc).join(' | ')}`);location.href=`mailto:${x.correo}?subject=${s}&body=${b}`}
-function renderDash(){let fD=document.getElementById('fDiv').value,fA=document.getElementById('fArea').value,fR=document.getElementById('fResp').value,fF=document.getElementById('fFecha').value;let a=getData().filter(x=>(!fD||x.planta==fD)&&(!fA||x.subarea==fA)&&(!fR||x.responsable==fR)&&(!fF||x.fecha==fF));let byDiv={};getData().forEach(x=>{byDiv[x.planta]=(byDiv[x.planta]||0)+x.hallazgos.length});document.getElementById('statDiv').innerHTML=Object.keys(byDiv).map(k=>`<div class="flex justify-between"><span>${k}</span><b>${byDiv[k]} hallazgos</b></div>`).join('')||'Sin datos';document.getElementById('perc').innerText=(getData().length?Math.round(100-getData().reduce((c,x)=>c+x.hallazgos.filter(h=>h.sev=='Crítico').length,0)/Math.max(1,getData().reduce((c,x)=>c+x.hallazgos.length,0))*100):100)+'%';document.getElementById('listaAll').innerHTML=a.map(x=>{let idx=getData().indexOf(x);return `<div class="border rounded-lg p-2"><div class="flex justify-between"><b class="text-sm">#${1024+idx} - ${x.subarea}</b><span class="text-xs">${x.fecha}</span></div><p class="text-xs">${x.planta} - ${x.responsable}</p>${x.hallazgos.map(h=>`<p class="text-sm"><span class="bg-yellow-100 px-1 rounded text-xs">${h.sev}</span> ${h.desc} ${h.foto?`<img src="${h.foto}" class="w-full rounded">`:''}</p>`).join('')}<div class="flex gap-2 mt-2"><button onclick='pdfUno(getData()[${idx}])' class="flex-1 bg-black text-white py-1 rounded text-xs">PDF</button><button onclick='enviarCorreo(getData()[${idx}])' class="flex-1 bg-blue-600 text-white py-1 rounded text-xs">Correo</button><button onclick="borrarUno(${idx})" class="bg-red-100 text-red-600 px-2 rounded text-xs">Eliminar</button></div></div>`}).join('')||'Sin resultados con esos filtros'}
-function borrarUno(i){if(prompt('Clave admin:')!='1234')return alert('Solo admin');let a=getData();a.splice(i,1);saveData(a);renderDash()}
-function gestionDiv(){let v=prompt('Nueva División:');if(v){DB.plantas[v]=[];saveDB();init();renderDash()}}
-function gestionArea(){let v=prompt('Nueva Área para '+document.getElementById('planta').value);if(v){DB.plantas[document.getElementById('planta').value].push(v);saveDB();init();renderDash()}}
-function gestionResp(){let v=prompt('Nombre responsable:');let c=prompt('Correo:');let s=prompt('Subárea asignada:');if(v&&c){DB.responsables.push({nombre:v,correo:c,subarea:s||document.getElementById('subarea').value});saveDB();loadFilters();alert('Agregado')}}
-function gestionCorr(){document.getElementById('adminEdit').innerHTML=DB.responsables.map(r=>`${r.nombre} - ${r.correo} - ${r.subarea}<br>`).join('')}
+let DB = JSON.parse(localStorage.getItem('inspDB')||'null') || {
+  divisiones: ["Acería","Laminación","Servicios"],
+  areas: { "Acería": ["Horno","Colada","Ajuste"] },
+  responsables: { "Horno": ["Juan Perez"], "Colada": ["Ana Gomez"] },
+  correos: { "Juan Perez":"juan@empresa.com", "Ana Gomez":"ana@empresa.com" },
+  inspecciones: []
+};
+let tempHallazgos=[]; let sevSel='Leve'; let gps='';
+
+function save(){ localStorage.setItem('inspDB', JSON.stringify(DB)); }
+function $(id){ return document.getElementById(id); }
+function init(){
+  $('fecha').value = new Date().toISOString().slice(0,10);
+  $('planta').innerHTML = DB.divisiones.map(d=>`<option>${d}</option>`).join('');
+  $('fDiv').innerHTML = `<option value="">Todas</option>`+DB.divisiones.map(d=>`<option>${d}</option>`).join('');
+  $('fArea').innerHTML = `<option value="">Todas</option>`;
+  cargarSub(); renderDash();
+}
+function cargarSub(){
+  let div = $('planta').value;
+  let subs = DB.areas[div]||[];
+  $('subarea').innerHTML = subs.map(s=>`<option>${s}</option>`).join('');
+  asignarResp();
+}
+function asignarResp(){
+  let sub = $('subarea').value;
+  let resps = DB.responsables[sub]||["Sin asignar"];
+  $('responsable').innerHTML = resps.map(r=>`<option>${r}</option>`).join('');
+  asignarCorreo();
+}
+function asignarCorreo(){ $('correo').value = DB.correos[$('responsable').value]||""; }
+function showStep(n){
+  ['p1','p2','p3'].forEach((id,i)=>$(id).classList.toggle('hidden', i!==(n-1)));
+  ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('tab-active', i===(n-1)));
+  if(n===3) renderDash();
+}
+function getGPS(){
+  if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(p=>{ gps=p.coords.latitude+','+p.coords.longitude; $('gpsText').textContent='📍 '+gps; }); } else { alert('No GPS'); }
+}
+function setSev(s){
+  sevSel=s;
+  ['sLeve','sMedio','sCrit'].forEach(id=>$(id).classList.remove('sev-on'));
+  if(s==='Leve') $('sLeve').classList.add('sev-on');
+  if(s==='Medio') $('sMedio').classList.add('sev-on');
+  if(s==='Crítico') $('sCrit').classList.add('sev-on');
+}
+$('foto')?.addEventListener('change', e=>{
+  let r=new FileReader(); r.onload=ev=>{ $('preview').src=ev.target.result; $('preview').classList.remove('hidden'); }; r.readAsDataURL(e.target.files[0]);
+});
+function addHallazgoTemp(){
+  let d=$('desc').value; if(!d) return alert('Escribe descripción');
+  tempHallazgos.push({desc:d, sev:sevSel, ubic:$('ubic').value, tipo:$('tipo').value, foto:$('preview').src});
+  $('listaTemp').innerHTML = tempHallazgos.map(h=>`<div style="border:1px solid #ddd;padding:8px;border-radius:8px;margin-top:6px">${h.desc} - ${h.sev}</div>`).join('');
+  $('desc').value='';
+}
+function guardarTodo(){
+  let insp={div:$('planta').value, area:$('subarea').value, resp:$('responsable').value, correo:$('correo').value, fecha:$('fecha').value, gps, hallazgos:tempHallazgos, estado:'Abierto'};
+  DB.inspecciones.push(insp); save(); tempHallazgos=[]; $('listaTemp').innerHTML=''; alert('Guardado!'); renderDash(); showStep(3);
+}
+function renderDash(){
+  let fD=$('fDiv').value, fA=$('fArea').value;
+  if(fD){ let ars=DB.areas[fD]||[]; $('fArea').innerHTML=`<option value="">Todas</option>`+ars.map(a=>`<option>${a}</option>`).join(''); }
+  let list=DB.inspecciones.filter(i=>(!fD||i.div===fD)&&(!fA||i.area===fA));
+  let total=list.length;
+  let crit=list.reduce((a,i)=>a+i.hallazgos.filter(h=>h.sev==='Crítico').length,0);
+  $('statDiv').innerHTML=`<p>Total inspecciones: <b>${total}</b> | Críticos: <b>${crit}</b></p>`;
+  $('listaAll').innerHTML = list.map((i,idx)=>`<div style="border:1px solid #ddd;padding:10px;border-radius:10px;margin-top:8px"><b>${i.div} - ${i.area}</b><br>${i.resp} - ${i.fecha}<br>Hallazgos: ${i.hallazgos.length}<br><button onclick="exportPDF(${idx})" style="margin-top:6px;padding:6px 10px;background:#1a4d2e;color:white;border:none;border-radius:6px">PDF</button></div>`).join('') || 'Sin datos';
+}
+function exportPDF(idx){
+  let i=DB.inspecciones[idx]; const {jsPDF}=window.jspdf; let doc=new jsPDF(); doc.text(`Inspeccion ${i.div} - ${i.area}`,10,10); doc.text(`Resp: ${i.resp} Fecha: ${i.fecha}`,10,20); i.hallazgos.forEach((h,n)=>doc.text(`${n+1}. ${h.desc} [${h.sev}]`,10,30+n*10)); doc.save('inspeccion.pdf');
+}
+function gestionDiv(){ $('adminEdit').innerHTML=`<input id="newDiv" class="input" placeholder="Nueva división"><button onclick="addDiv()" class="btn-green">Agregar</button>`+DB.divisiones.map(d=>`<p>${d}</p>`).join(''); }
+function addDiv(){ let v=$('newDiv').value; if(v){ DB.divisiones.push(v); DB.areas[v]=[]; save(); init(); gestionDiv(); } }
+function gestionArea(){ let d=$('planta').value; $('adminEdit').innerHTML=`<p>División: ${d}</p><input id="newArea" class="input" placeholder="Nueva área"><button onclick="addArea()" class="btn-green">Agregar</button>`+(DB.areas[d]||[]).map(a=>`<p>${a}</p>`).join(''); }
+function addArea(){ let v=$('newArea').value; let d=$('planta').value; if(v){ DB.areas[d].push(v); save(); cargarSub(); gestionArea(); } }
+function gestionResp(){ $('adminEdit').innerHTML=`<input id="newResp" class="input" placeholder="Nombre"><input id="newRespArea" class="input" placeholder="Subárea (Horno)"><input id="newRespMail" class="input" placeholder="correo"><button onclick="addResp()" class="btn-green">Agregar responsable</button>`; }
+function addResp(){ let n=$('newResp').value, a=$('newRespArea').value, m=$('newRespMail').value; if(!DB.responsables[a]) DB.responsables[a]=[]; DB.responsables[a].push(n); DB.correos[n]=m; save(); alert('Agregado'); }
+function gestionCorr(){ gestionResp(); }
+
 init();
