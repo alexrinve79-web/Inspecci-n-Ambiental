@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Inspecciones Ambientales v14 FINAL</title>
+<title>Inspecciones Ambientales v15</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}body{background:#f2f0eb;font-family:Inter,Arial,sans-serif;padding-bottom:90px}
@@ -25,7 +25,7 @@ label{font-size:12px;font-weight:800;color:#374151}
 </style>
 </head>
 <body>
-<header class="header"><div><h1>🌿 Inspecciones Ambientales</h1><p>v14 FINAL • Todo en un archivo</p></div><span class="badge">ADMIN</span></header>
+<header class="header"><div><h1>🌿 Inspecciones Ambientales</h1><p>v15 • Responsable automático</p></div><span class="badge">ADMIN</span></header>
 <div id="p1" class="page">
 <div class="card"><h2>Información General</h2>
 <label>Área / Planta *</label><select id="planta" class="input"></select>
@@ -66,15 +66,37 @@ label{font-size:12px;font-weight:800;color:#374151}
 </div>
 <nav class="bottomnav"><button id="b1" onclick="showStep(1)" class="tab-active">🏠 Inicio</button><button id="b2" onclick="showStep(2)">📝 Inspecciones</button><button id="b3" onclick="showStep(3)">📊 Admin</button></nav>
 <script>
-let DB = JSON.parse(localStorage.getItem('DBv14')||'null') || {
+let DB = JSON.parse(localStorage.getItem('DBv15')||'null') || {
   divisiones: ["Acería","Laminación","Servicios Generales"],
   areas: {"Acería":["Horno Eléctrico","Colada Continua","Ajuste","Patio Chatarra"],"Laminación":["Tren 1","Tren 2","Horno Recalentamiento"],"Servicios Generales":["PTAR","Almacén","Talleres"]},
-  responsables: {"Horno Eléctrico":["Juan Perez","Carlos Ruiz"],"Colada Continua":["Ana Gomez"],"Ajuste":["Luis Torres"],"Tren 1":["Maria Lopez"]},
-  correos: {"Juan Perez":"juan@empresa.com","Carlos Ruiz":"carlos@empresa.com","Ana Gomez":"ana@empresa.com","Luis Torres":"luis@empresa.com","Maria Lopez":"maria@empresa.com"},
+  responsables: {
+    "Horno Eléctrico":["Juan Perez","Carlos Ruiz"],
+    "Colada Continua":["Ana Gomez"],
+    "Ajuste":["Luis Torres"],
+    "Patio Chatarra":["Pedro Diaz"],
+    "Tren 1":["Maria Lopez"],
+    "Tren 2":["Carlos Ruiz"],
+    "Horno Recalentamiento":["Jorge Ramirez"],
+    "PTAR":["Laura Mendez"],
+    "Almacén":["Diego Soto"],
+    "Talleres":["Andres Paredes"]
+  },
+  correos: {
+    "Juan Perez":"juan@empresa.com",
+    "Carlos Ruiz":"carlos@empresa.com",
+    "Ana Gomez":"ana@empresa.com",
+    "Luis Torres":"luis@empresa.com",
+    "Pedro Diaz":"pedro@empresa.com",
+    "Maria Lopez":"maria@empresa.com",
+    "Jorge Ramirez":"jorge@empresa.com",
+    "Laura Mendez":"laura@empresa.com",
+    "Diego Soto":"diego@empresa.com",
+    "Andres Paredes":"andres@empresa.com"
+  },
   inspecciones: []
 };
 let tempHallazgos=[]; let sevSel='Leve'; let gps='';
-function save(){ localStorage.setItem('DBv14', JSON.stringify(DB)); }
+function save(){ localStorage.setItem('DBv15', JSON.stringify(DB)); }
 function $(id){return document.getElementById(id)}
 function init(){
   $('fecha').value=new Date().toISOString().slice(0,10);
